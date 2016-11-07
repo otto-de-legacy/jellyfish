@@ -1,0 +1,23 @@
+html, body {
+    min-height:100%;
+    position:relative;
+}
+
+#main {
+    margin: 0 10px 20px 10px;
+    min-height:600px;
+}
+
+.verticalLine {
+    border-left: thick solid #ff0000;
+}
+
+.with-love {
+    color: #333;
+    display: inline-block;
+}
+
+.with-love .heart {
+    font-size: 1.4em;
+    color: #ff79c6;
+}

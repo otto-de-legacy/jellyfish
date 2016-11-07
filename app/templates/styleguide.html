@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set active_page = "styleguide.style_guide" %}
+{% block content %}
+<link href="/static/css/jellyfish.css" rel=stylesheet type="text/css" media=screen>
+
+<h3>Style Guide</h3>
+
+{%- for test in testdata | sort %}
+{% set service = testdata[test] %}
+<h3>{{test}}</h3>
+{% include "tile.html" %}
+{% endfor %}
+
+{% endblock %}

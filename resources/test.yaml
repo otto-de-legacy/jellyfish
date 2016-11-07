@@ -1,0 +1,23 @@
+environments:
+  - name: develop-ci
+    alias: CI
+  - name: develop
+    alias: DEV
+  - name: prelive
+    alias: PRE
+  - name: fit
+    alias: FIT
+  - name: live
+    alias: LIVE
+marathons:
+  - protocol: http
+    host: localhost:12345
+    apps: /v2/apps
+    username: username
+    password: password
+    root_app_lable: ROOT_APP
+    status_path_lable: STATUS_PATH
+    domain: some-domain.com
+services:
+  - id: /{environment}/order/order
+    url: http://order.{environment}.some-domain/service/internal/status

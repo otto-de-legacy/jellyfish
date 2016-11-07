@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+<link rel="shortcut icon" type="image/png" href="/static/img/favicon.png">
+
+<link href="/static/css/base.css" rel=stylesheet type="text/css" media=screen>
+
+<link href="/static/3rd/css/flatly/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="/static/css/footer_day.css" rel=stylesheet type="text/css" media=screen>
+<link href="/static/css/day.css" rel=stylesheet type="text/css" media=screen>
+
+
+<script src="/static/3rd/js/jquery-2.1.4.min.js"></script>
+<script src="/static/3rd/js/bootstrap.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+
+    <title>Styleguide - Jellyfish</title>
+
+</head>
+<body>
+<div id="main">
+
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <a class="navbar-brand" href="/">
+                    <span>
+                    <img style="max-width:100px; margin-top: -7px;"
+                         src="/static/img/icon.png">
+                     Jellyfish
+                    </span>
+                </a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+
+                    <li >
+                        <a href="/monitor">Status</a>
+                    </li>
+
+                    <li >
+                        <a href="/resourcen">Resource Allocation</a>
+                    </li>
+
+                    <li  class="active" >
+                        <a href="/internal/style">Style Guide</a>
+                    </li>
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <button id="style_change" type="button" class="btn btn-default btn-sm navbar-btn"
+                                aria-label="Left Align"
+
+                        data-style="night">
+                        Switch to night style
+
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+<link href="/static/css/jellyfish.css" rel=stylesheet type="text/css" media=screen>
+
+<h3>Style Guide</h3>
+
+<h3>1) Green and Blue are OK (Marathon)</h3>
+
+
+<div class="well well-sm
+
+">
+
+    <div>
+        <div class="block-icon BLU"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-success black-text">OK</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-1-blu---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-1-blu---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+<div class="well well-sm
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-success black-text">OK</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-1-grn---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-1-grn---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>1b) Non Marathon Application</h3>
+
+
+<div class="well well-sm
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+    <img style="width:20px;"
+                 src="/static/img/server.png">
+    </div>
+
+
+
+    <span class="label label-success black-text">OK</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<h3>2) Running jobs will indicated as glowing</h3>
+
+
+<div class="well well-sm
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-success black-text">OK</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  glowing  health-dot-danger" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job ERROR
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  glowing  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  glowing  health-dot-unknown" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job UNKNOWN
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  glowing  health-dot-warning" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job WARNING
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-2---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-2---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>3) App status is unknown (could not read status page) but marathon tasks are healthy</h3>
+
+
+<div class="well well-sm
+
+    well-unknown
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>UNKNOWN</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-default black-text">UNKNOWN</span>
+
+
+    <div>
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-3---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-3---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>4) App is suspended (0 of 0 instances)</h3>
+
+
+<div class="well well-sm
+
+    well-unknown
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>UNKNOWN</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-primary">suspended</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-default black-text">UNKNOWN</span>
+
+
+    <div>
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-4---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-4---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 0   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 0   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>5) App status is warning</h3>
+
+
+<div class="well well-sm
+
+    well-warning
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-warning black-text">WARNING</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-danger" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job ERROR
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-unknown" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job UNKNOWN
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-warning" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job WARNING
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-5---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-5---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>6) App status is error</h3>
+
+
+<div class="well well-sm
+
+    well-danger
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">2/2</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-danger black-text">ERROR</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-danger" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job ERROR
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-unknown" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job UNKNOWN
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-warning" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job WARNING
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-6---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-6---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 2   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 2,048   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>7) App status of one instance is critical</h3>
+
+
+<div class="well well-sm
+
+    well-danger
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>0.1.1464339</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-danger">1/2</big>
+
+
+
+
+
+        <small class="label label-danger black-text">Unhealthy: 1</small>
+
+    </div>
+
+
+
+    <span class="label label-success black-text">OK</span>
+
+
+    <div>
+        <div>
+
+            <span class="health-dot  health-dot-danger" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job ERROR
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-success" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job OK
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-unknown" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job UNKNOWN
+
+        </div>
+
+        <div>
+
+            <span class="health-dot  health-dot-warning" data-toggle="tooltip" data-placement="bottom" title=""></span>
+
+            Job WARNING
+
+        </div>
+
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-7---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-7---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 2   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 2,048   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>8) App is down</h3>
+
+
+<div class="well well-sm
+
+    well-danger
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>UNKNOWN</span>
+
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-danger">0/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-default black-text">UNKNOWN</span>
+
+
+    <div>
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-8---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-8---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+<h3>9) App is healthy but status page is not accessible (status code &gt; 500. possible issue with cname/varnish)</h3>
+
+
+<div class="well well-sm
+
+    well-danger
+
+">
+
+    <div>
+        <div class="block-icon GRN"></div>
+
+
+        <span>UNKNOWN</span>
+
+
+        <span class="label label-danger black-text">503</span>
+
+    </div>
+
+
+    <div>
+        <a href="/" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="/static/img/marathon.png">
+        </a>
+
+        <big class="text-success">1/1</big>
+
+
+
+
+
+    </div>
+
+
+
+    <span class="label label-default black-text">UNKNOWN</span>
+
+
+    <div>
+    </div>
+
+    <button class="expand_button" data-toggle="collapse" data-target="#-9---info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="-9---info" class="collapse">
+        <div><span class="label label-unflashy">CPU: 1   ( 1 per instance, max usage: 0.5 )</span></div>
+        <div><span class="label label-unflashy">MEM: 1,024   ( 1,024 per instance, max usage: 512 )</span></div>
+    </div>
+
+</div>
+
+
+
+
+
+</div>
+
+
+<script src="/static/js/url_params.js"></script>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+</script>
+
+<footer>
+    <div class="container footerWrap">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3">
+                <h4>Contact</h4>
+                <ul class="list-unstyled">
+                    <li><a href="http://dev.otto.de/">Otto Dev Blog</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-3">
+                <h4>Resources</h4>
+                <ul class="list-unstyled">
+                    <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></li>
+                    <li><a href="https://bootswatch.com/flatly/">Bootswatch: Flatly</a></li>
+                    <li><a href="https://www.python.org/">Python</a></li>
+                    <li><a href="http://flask.pocoo.org/">Flask</a></li>
+                    <li><a href="https://api.mongodb.org/python/current/">Pymongo</a></li>
+                    <li><a href="http://flaticons.net/">Flaticons</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-3">
+                <h4>Social</h4>
+                <ul class="list-unstyled">
+                    <li><a href="https://www.facebook.com/Otto" target="_blank">Facebook</a></li>
+                    <li><a href="https://twitter.com/otto_de" target="_blank">Twitter</a></li>
+                    <li><a href="https://www.youtube.com/user/OTTO" target="_blank">YouTube</a></li>
+                    <li><a href="https://plus.google.com/+ottode" target="_blank">Google+</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="subFooter">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="pull-left">
+                        <div class="with-love">Made with <span class="heart">♥</span> by Otto</div>
+                        //
+                        <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>

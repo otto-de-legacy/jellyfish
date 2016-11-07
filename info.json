@@ -1,0 +1,11 @@
+{
+  "name": "Jellyfish",
+  "team": "unknown",
+  "group": "tools",
+  "description": "Service to monitor the health and status of applications running in Marathon",
+  "version": "unknown",
+  "commit": "unknown",
+  "vcs_link": "no-link",
+  "contact_technical": "unknown",
+  "contact_business": "unknown"
+}

@@ -1,0 +1,100 @@
+{%- for color in service | sort %}
+{% set app = service[color] %}
+<div class="well well-sm
+{% if app.status == 1 %}
+    well-unknown
+{% elif app.status == 2 %}
+    well-warning
+{% elif app.status >= 3 %}
+    well-danger
+{% endif %}
+">
+
+    <div>
+        <div class="block-icon {{color}}"></div>
+        {% if vertical == "all" %}
+        <small class="label label-info black-text">{{app.vertical}}</small>
+        {% endif %}
+        {% if app.status_url %}
+        <a href="{{app.status_url}}">{{app.version}}</a>
+        {% else %}
+        <span>{{app.version}}</span>
+        {% endif %}
+        {% if app.status_page_status_code and app.status_page_status_code >= 500 %}
+        <span class="label label-danger black-text">{{app.status_page_status_code}}</span>
+        {% endif %}
+    </div>
+
+    {% if app.marathon %}
+    <div>
+        <a href="{{app.marathon.marathon_link}}" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="{{ url_for('static', filename = 'img/marathon.png') }}">
+        </a>
+        {% if app.marathon.healthy < app.marathon.instances %}
+        <big class="text-danger">{{app.marathon.healthy}}/{{app.marathon.instances}}</big>
+        {% elif app.marathon.instances == 0 %}
+        <big class="text-primary">suspended</big>
+        {% else %}
+        <big class="text-success">{{app.marathon.healthy}}/{{app.marathon.instances}}</big>
+        {% endif %}
+
+        {% if app.marathon.staged > 0 %}
+        <small class="label label-warning black-text">Staged: {{app.marathon.staged}}</small>
+        {% endif %}
+
+        {% if app.marathon.unhealthy > 0 %}
+        <small class="label label-danger black-text">Unhealthy: {{app.marathon.unhealthy}}</small>
+        {% endif %}
+    </div>
+    {% else %}
+    <div>
+    <img style="width:20px;"
+                 src="{{ url_for('static', filename = 'img/server.png') }}">
+    </div>
+    {% endif %}
+
+    {% if app.app_status == 0 %}
+    <span class="label label-success black-text">OK</span>
+    {% elif app.app_status == 1 %}
+    <span class="label label-default black-text">UNKNOWN</span>
+    {% elif app.app_status == 2 %}
+    <span class="label label-warning black-text">WARNING</span>
+    {% else %}
+    <span class="label label-danger black-text">ERROR</span>
+    {% endif %}
+
+    <div>
+        {%- for job, job_info in app.jobs.items() | sort %}
+        <div>
+            {% if job_info.status == 0 %}
+            <span class="health-dot {% if job_info.running %} glowing {% endif %} health-dot-success" data-toggle="tooltip" data-placement="bottom" title="{{job_info.message}}"></span>
+            {% elif job_info.status == 1 %}
+            <span class="health-dot {% if job_info.running %} glowing {% endif %} health-dot-unknown" data-toggle="tooltip" data-placement="bottom" title="{{job_info.message}}"></span>
+            {% elif job_info.status == 2 %}
+            <span class="health-dot {% if job_info.running %} glowing {% endif %} health-dot-warning" data-toggle="tooltip" data-placement="bottom" title="{{job_info.message}}"></span>
+            {% else %}
+            <span class="health-dot {% if job_info.running %} glowing {% endif %} health-dot-danger" data-toggle="tooltip" data-placement="bottom" title="{{job_info.message}}"></span>
+            {% endif %}
+            {{job}}
+            {% if job_info.age %}
+            <span class="small">[{{job_info.age}}]</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {%- if not cinema_mode %}
+    {% if app.marathon %}
+    <button class="expand_button" data-toggle="collapse" data-target="#{{vertical}}-{{app.name}}-{{app.group}}-{{app.color}}-info">
+        <span class="glyphicon glyphicon-chevron-down"></span>
+    </button>
+    <div id="{{vertical}}-{{app.name}}-{{app.group}}-{{app.color}}-info" class="collapse">
+        <div><span class="label label-unflashy">CPU: {{app.marathon.instances * app.marathon.cpu}}   ( {{app.marathon.cpu}} per instance, max usage: {{app.marathon.max_cpu}} )</span></div>
+        <div><span class="label label-unflashy">MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}   ( {{ '{0:,}'.format(app.marathon.mem | int) }} per instance, max usage: {{ '{0:,}'.format(app.marathon.max_mem | round(2) ) }} )</span></div>
+    </div>
+    {%- endif %}
+    {%- endif %}
+
+</div>
+{% endfor %}

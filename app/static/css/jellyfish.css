@@ -1,0 +1,152 @@
+.table-condensed {
+	width: 100%;
+}
+
+.service_info_width {
+    width: 5%;
+}
+
+.env_width {
+    width: 20%;
+}
+
+.color-div {
+    margin-bottom: 10px;
+}
+
+.item {
+    width: 400px;
+}
+
+.item h3 {
+    margin-left: 10px;
+}
+
+.timestamp {
+    font-size: 0.8em;
+}
+
+.black-text {
+    color: black !important;
+}
+
+.margin-to-top {
+    margin-top: -5px;
+}
+
+.GRN {
+    background: #2CB32C;
+}
+
+.BLU {
+    background: #4949FC;
+}
+
+.block-icon {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  border: 1px solid rgba(0, 0, 0, .2);
+}
+
+.well-warning {
+    border-left: 15px solid #f39c12;
+}
+
+.well-danger {
+    border-left: 15px solid #e74c3c;
+}
+
+.well-unknown {
+    border-left: 15px solid #8e929b;
+}
+
+span.glyphicon-thumbs-up {
+    font-size: 10.2em;
+}
+
+.expand_button {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    color: gray;
+}
+
+@-webkit-keyframes glowing {
+  0% {  }
+  50% { background-color: #FFFFFF; box-shadow: 0 0 20px #f39c12; }
+  100% {  }
+}
+
+@-moz-keyframes glowing {
+  0% {  }
+  50% { background-color: #FFFFFF; box-shadow: 0 0 20px #f39c12; }
+  100% {  }
+}
+
+@-o-keyframes glowing {
+  0% {  }
+  50% { background-color: #FFFFFF; box-shadow: 0 0 20px #f39c12; }
+  100% {  }
+}
+
+@keyframes glowing {
+  0% {  }
+  50% { background-color: #FFFFFF; box-shadow: 0 0 20px #f39c12; }
+  100% {  }
+}
+
+.health-dot-glowing:before{
+    content:"\00a0";
+    -moz-border-radius:50%;
+    -webkit-border-radius:50%;
+    border-radius:50%;
+    border:2px solid #51565d;
+    width:12px;
+    height:12px;
+    display:inline-block;
+    vertical-align:middle;
+    margin-right:6px;
+    margin-bottom:1px
+
+    -webkit-animation: glowing 1500ms infinite;
+    -moz-animation: glowing 1500ms infinite;
+    -o-animation: glowing 1500ms infinite;
+    animation: glowing 1500ms infinite;
+}
+
+.health-dot:before{
+    content:"\00a0";
+    -moz-border-radius:50%;
+    -webkit-border-radius:50%;
+    border-radius:50%;
+    border:2px solid #51565d;
+    width:12px;
+    height:12px;
+    display:inline-block;
+    vertical-align:middle;
+    margin-right:6px;
+    margin-bottom:1px
+}
+
+.glowing:before{
+    -webkit-animation: glowing 1500ms infinite;
+    -moz-animation: glowing 1500ms infinite;
+    -o-animation: glowing 1500ms infinite;
+    animation: glowing 1500ms infinite;
+}
+
+.health-dot-danger:before{
+    background-color:#e74c3c
+}
+.health-dot-warning:before{
+    background-color:#f39c12
+}
+.health-dot-success:before{
+    background-color:#18bc9c
+}
+.health-dot-unknown:before{
+    background-color:#8e929b
+}

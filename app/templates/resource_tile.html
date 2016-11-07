@@ -1,0 +1,58 @@
+{%- for color in service %}
+{% set app = service[color] %}
+<div class="well well-sm
+{% if app.status == 1 %}
+    well-unknown
+{% elif app.status == 2 %}
+    well-warning
+{% elif app.status >= 3 %}
+    well-danger
+{% endif %}
+">
+
+    <div>
+        <div class="block-icon {{color}}"></div>
+        {% if vertical == "all" %}
+        <small class="label label-info black-text">{{app.vertical}}</small>
+        {% endif %}
+    </div>
+
+    {% if app.marathon %}
+    <div>
+        <a href="{{app.marathon.marathon_link}}" style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="{{ url_for('static', filename = 'img/marathon.png') }}">
+        </a>
+        {% if app.marathon.healthy < app.marathon.instances %}
+        <big class="text-danger">{{app.marathon.healthy}}/{{app.marathon.instances}}</big>
+        {% elif app.marathon.instances == 0 %}
+        <big class="text-primary">suspended</big>
+        {% else %}
+        <big class="text-success">{{app.marathon.healthy}}/{{app.marathon.instances}}</big>
+        {% endif %}
+    </div>
+
+    {% if app.marathon.cpu %}
+    <div>
+    <span class="label label-info">Σ CPU: {{app.marathon.instances * app.marathon.cpu}}</span>
+    <span class="">{{app.marathon.max_cpu}} <span class="label label-unflashy">of</span> {{app.marathon.cpu}}  - [ {{ (app.marathon.max_cpu / app.marathon.cpu * 100) | round(2) }}% ]</span>
+    </div>
+    {% endif %}
+    {% if app.marathon.mem %}
+    <div>
+    <span class="label label-info">Σ MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}</span>
+    <span class="">{{ '{0:,}'.format(app.marathon.max_mem | round(2) ) }} <span class="label label-unflashy">of</span> {{ '{0:,}'.format(app.marathon.mem | int) }}  - [ {{ (app.marathon.max_mem / app.marathon.mem * 100) | round(2) }}% ]</span>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div>
+    <img style="width:20px;"
+                 src="{{ url_for('static', filename = 'img/server.png') }}">
+    </div>
+    {% endif %}
+
+
+
+</div>
+{% endfor %}
