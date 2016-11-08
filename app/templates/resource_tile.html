@@ -32,26 +32,61 @@
         {% endif %}
     </div>
 
-    {% if app.marathon.cpu %}
-    <div>
-    <span class="label label-info">Σ CPU: {{app.marathon.instances * app.marathon.cpu}}</span>
-    <span class="">{{app.marathon.max_cpu}} <span class="label label-unflashy">of</span> {{app.marathon.cpu}}  - [ {{ (app.marathon.max_cpu / app.marathon.cpu * 100) | round(2) }}% ]</span>
-    </div>
-    {% endif %}
-    {% if app.marathon.mem %}
-    <div>
-    <span class="label label-info">Σ MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}</span>
-    <span class="">{{ '{0:,}'.format(app.marathon.max_mem | round(2) ) }} <span class="label label-unflashy">of</span> {{ '{0:,}'.format(app.marathon.mem | int) }}  - [ {{ (app.marathon.max_mem / app.marathon.mem * 100) | round(2) }}% ]</span>
-    </div>
-    {% endif %}
+    <table width="100%">
+
+        {% if app.marathon.cpu %}
+        <tr>
+            <td>
+                <span class="label label-info">Σ CPU: {{app.marathon.instances * app.marathon.cpu}}</span>
+            </td>
+            <td align="right">
+                {{app.marathon.max_cpu}}
+            </td>
+            <td align="center">
+                <span class="label label-unflashy">of</span>
+            </td>
+            <td align="right">
+                {{app.marathon.cpu}}
+            </td>
+            <td align="right">
+                <span class="label label-unflashy">{{ (app.marathon.max_cpu / app.marathon.cpu * 100) | round(2) }}% </span>
+            </td>
+            <td>
+                <div class="pie"
+                     style="animation-delay: -{{ (app.marathon.max_cpu / app.marathon.cpu * 100) | round(2) }}s"></div>
+            </td>
+
+        </tr>
+
+        {% endif %}
+        {% if app.marathon.mem %}
+        <tr>
+            <td>
+                <span class="label label-info">Σ MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}</span>
+            </td>
+            <td align="right">
+                {{ '{0:,}'.format(app.marathon.max_mem | round(2) ) }}
+            </td>
+            <td align="center">
+                <span class="label label-unflashy">of</span>
+            </td>
+            <td align="right">
+                {{ '{0:,}'.format(app.marathon.mem | int) }}
+            </td>
+            <td align="right">
+                <span class="label label-unflashy">{{ (app.marathon.max_mem / app.marathon.mem * 100) | round(2) }}%</span>
+            </td>
+            <td>
+                <div class="pie"
+                     style="animation-delay: -{{ (app.marathon.max_mem / app.marathon.mem * 100) | round(2) }}s"></div>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
 
     {% else %}
-    <div>
-    <img style="width:20px;"
-                 src="{{ url_for('static', filename = 'img/server.png') }}">
-    </div>
+    <div><img style="width:20px;" src="{{ url_for('static', filename = 'img/server.png') }}"></div>
     {% endif %}
-
 
 
 </div>
