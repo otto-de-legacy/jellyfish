@@ -27,3 +27,4 @@ ghostdriver.log
 *.db.*
 .DS_Store
 *.patch
+local.yaml
