@@ -184,6 +184,5 @@ span.glyphicon-thumbs-up {
   animation: spin 50s linear infinite,
              bg 100s step-end infinite;
   animation-play-state: paused;
-  animation-max
   animation-delay: inherit;
 }

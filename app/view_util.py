@@ -1,6 +1,11 @@
+from flask import render_template, request
+
 from app.config import app_name
 from app.config import navigation_bar
-from flask import render_template, request
+
+
+def ceil(value):
+    return 99.99 if value > 99.99 else value
 
 
 def render(html, title, **kwargs):

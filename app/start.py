@@ -5,10 +5,11 @@ import uuid
 from threading import Timer
 
 import redislite
-from app import config, status, styleguide, update, views
 from delorean import Delorean
 from eliza.config import ConfigLoader
 from flask import Flask
+
+from app import config, status, styleguide, update, views, view_util
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,8 @@ logger = logging.getLogger(__name__)
 def create_app(port, environment, working_dir, greedy_mode):
     flask = Flask(__name__)
     flask.config.from_pyfile('config.py')
+
+    flask.jinja_env.filters['ceil'] = view_util.ceil
 
     config_loader = ConfigLoader(verify=False)
     config.info = config_loader.load_application_info("./")
