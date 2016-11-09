@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.14.0] - 2016-11-9
+
+### Add
+- Tidy up resource overview.
+- Mini pie charts for resource overview.
+
 ## 0.13.1 - 2016-11-7
 
 ### Fixed
@@ -154,3 +160,5 @@ First release of Jellyfish.
 - Status page of all colors of an app identical.
 
 This changelog is inspired by [keepachangelog.com](http://http://keepachangelog.com/de/)
+[Unreleased]: https://github.com/otto-de/jellyfish/compare/0.14.0...HEAD
+[0.14.0]: https://github.com/otto-de/jellyfish/compare/d0ff089a5409d9e7e00150b381e9c01a34bb9e5d...0.14.0
