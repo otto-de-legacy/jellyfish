@@ -4,6 +4,7 @@ import socket
 
 from app import config
 from app import view_util
+import version
 from delorean import Delorean
 from flask import Response, render_template, request, jsonify, Blueprint
 
@@ -47,7 +48,8 @@ def generate_status():
             "description": blueprint.info['description'],
             "group": blueprint.info['group'],
             "environment": blueprint.environment,
-            "version": blueprint.info['version'],
+            "release": '.'.join(str(x) for x in version.__version__),
+            "build": blueprint.info['version'],
             "commit": blueprint.info['commit'],
             "vcs_link": blueprint.info['vcs_link'] + blueprint.info['commit'],
             "status": "OK",
