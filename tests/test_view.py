@@ -277,7 +277,7 @@ class TestView(unittest.TestCase):
         envs = [{'name': 'dev-ci', 'alias': 'ci'}, {'name': 'PRODUCTIVE', 'alias': 'prod'},
                 {'name': 'dog', 'alias': 'cat'}, {'name': 'BANANA', 'alias': 'pyjama'}]
         expected = [{'name': 'dev-ci', 'alias': 'ci'}, {'name': 'PRODUCTIVE', 'alias': 'prod'}]
-        self.assertEqual(expected, views.filter_environments(envs, ['ci', 'prod']))
+        self.assertEqual(expected, views.filter_environments(envs, ['dev-ci', 'PRODUCTIVE']))
         self.assertEqual(envs, views.filter_environments(envs, False))
 
     def test_filter_environments_not_filter(self):
@@ -285,5 +285,5 @@ class TestView(unittest.TestCase):
                 {'name': 'dog', 'alias': 'cat'}, {'name': 'BANANA', 'alias': 'pyjama'}]
         expected = [{'name': 'PRODUCTIVE', 'alias': 'prod'},
                     {'name': 'dog', 'alias': 'cat'}, {'name': 'BANANA', 'alias': 'pyjama'}]
-        self.assertEqual(expected, views.filter_environments(envs, ['!ci']))
+        self.assertEqual(expected, views.filter_environments(envs, ['!dev-ci']))
         self.assertEqual(envs, views.filter_environments(envs, False))

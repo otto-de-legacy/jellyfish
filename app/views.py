@@ -175,7 +175,9 @@ def filter_environments(environments, env_filter):
         include_envs, exclude_envs = get_filter_lists(env_filter)
         filtered_environments = list()
         for env in environments:
-            if filter(env['name'].lower(), include=include_envs, exclude=exclude_envs):
+            if filter(env['name'].lower(),
+                      include=[e.lower() for e in include_envs],
+                      exclude=[e.lower() for e in exclude_envs]):
                 filtered_environments.append(env)
         return filtered_environments
     else:
