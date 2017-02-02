@@ -131,8 +131,11 @@ def get_task_info(app, cfg):
         task["app_status"] = status_level("UNKNOWN")
         task["jobs"] = dict()
 
-    if task["marathon"]["instances"] > 0:
-        resources = get_peak_resource_usage(cfg['graphite']['cpu'], cfg['graphite']['mem'], task["name"], task["vertical"], task["group"],
+    graphite_cpu_url = get_in_dict(['graphite', 'cpu'], cfg, "")
+    graphite_mem_url = get_in_dict(['graphite', 'mem'], cfg, "")
+    if task["marathon"]["instances"] > 0 and graphite_cpu_url and graphite_mem_url:
+        resources = get_peak_resource_usage(graphite_cpu_url, graphite_mem_url, task["name"], task["vertical"],
+                                            task["group"],
                                             task["color"] if 'blu' in task["id"] or 'grn' in task["id"] else None)
         task["marathon"]["max_cpu"] = resources["max_cpu"]
         task["marathon"]["max_mem"] = resources["max_mem"]
