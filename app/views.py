@@ -47,33 +47,38 @@ def get_filter_lists(l):
 
 
 def filter_state(app_list, name_filter, group_filter, type_filter, active_color_only_filter, status_filter,
-                 include_jobs, include_age):
+                 include_jobs, include_age, env_filter):
     if name_filter:
         include_names, exclude_names = get_filter_lists(name_filter)
     if group_filter:
         include_groups, exclude_groups = get_filter_lists(group_filter)
     if type_filter:
         include_types, exclude_types = get_filter_lists(type_filter)
+    if env_filter:
+        include_envs, exclude_envs = get_filter_lists(env_filter)
     filtered_list = list()
     for app in app_list:
         if not name_filter or filter(app['name'], include=include_names, exclude=exclude_names):
-            if not group_filter or filter(app['vertical'], include=include_groups, exclude=exclude_groups):
-                if not type_filter or filter(get_in_dict(["marathon", "labels", "type"], app, ""),
-                                             include=include_types,
-                                             exclude=exclude_types):
-                    if not active_color_only_filter or not app["active_color"] or app["color"] == app["active_color"]:
-                        if app["status"] >= status_filter:
-                            if include_jobs:
-                                filtered_jobs = dict()
-                                for job_name, job_info in app["jobs"].items():
-                                    if job_info['status'] >= status_filter:
-                                        if job_info['status'] >= 1 and include_age and job_info.get('stopped', False):
-                                            job_info["age"] = get_humanize_age(job_info)
-                                        filtered_jobs[job_name] = job_info
-                                app["jobs"] = filtered_jobs
-                            else:
-                                app["jobs"] = dict()
-                            filtered_list.append(app)
+            if not env_filter or filter(app['group'], include=include_envs, exclude=exclude_envs):
+                if not group_filter or filter(app['vertical'], include=include_groups, exclude=exclude_groups):
+                    if not type_filter or filter(get_in_dict(["marathon", "labels", "type"], app, ""),
+                                                 include=include_types,
+                                                 exclude=exclude_types):
+                        if not active_color_only_filter or not app["active_color"] \
+                                or app["color"] == app["active_color"]:
+                            if app["status"] >= status_filter:
+                                if include_jobs:
+                                    filtered_jobs = dict()
+                                    for job_name, job_info in app["jobs"].items():
+                                        if job_info['status'] >= status_filter:
+                                            if job_info['status'] >= 1 and include_age and job_info.get('stopped',
+                                                                                                        False):
+                                                job_info["age"] = get_humanize_age(job_info)
+                                            filtered_jobs[job_name] = job_info
+                                    app["jobs"] = filtered_jobs
+                                else:
+                                    app["jobs"] = dict()
+                                filtered_list.append(app)
     return filtered_list
 
 
@@ -170,7 +175,7 @@ def filter_environments(environments, env_filter):
         include_envs, exclude_envs = get_filter_lists(env_filter)
         filtered_environments = list()
         for env in environments:
-            if filter(env['alias'].lower(), include=include_envs, exclude=exclude_envs):
+            if filter(env['name'].lower(), include=include_envs, exclude=exclude_envs):
                 filtered_environments.append(env)
         return filtered_environments
     else:
@@ -200,7 +205,8 @@ def monitor(cinema_mode=False):
                                  active_color_only_filter=active_color_filter,
                                  status_filter=status_filter,
                                  include_jobs=include_jobs,
-                                 include_age=include_age)
+                                 include_age=include_age,
+                                 env_filter=env_filter)
     vertical_resource_allocation, app_resource_allocation = get_app_resource_allocation(app_list)
     return view_util.render("jellyfish.html",
                             "Jellyfish",
@@ -227,7 +233,8 @@ def resourcen(cinema_mode=False):
                                  active_color_only_filter=False,
                                  status_filter=status_filter,
                                  include_jobs=False,
-                                 include_age=False)
+                                 include_age=False,
+                                 env_filter=env_filter)
     vertical_resource_allocation, app_resource_allocation = get_app_resource_allocation(app_list)
 
     return view_util.render("resourcen.html",

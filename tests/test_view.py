@@ -53,14 +53,15 @@ class TestView(unittest.TestCase):
                          views.filter_state(app_list=self.test_apps, name_filter=None, group_filter=None,
                                             type_filter=None,
                                             active_color_only_filter=False,
-                                            status_filter=0, include_jobs=True, include_age=False))
+                                            status_filter=0, include_jobs=True, include_age=False, env_filter=False))
 
     def test_filter_state_name_filter(self):
         expected = [testdata_helper.get_task(name='dog', vertical='mammal')]
         self.assertEqual(expected, views.filter_state(app_list=self.test_apps, name_filter=['dog'], group_filter=None,
                                                       type_filter=None,
                                                       active_color_only_filter=False,
-                                                      status_filter=0, include_jobs=True, include_age=False))
+                                                      status_filter=0, include_jobs=True, include_age=False,
+                                                      env_filter=False))
 
     def test_filter_state_not_name_filter(self):
         expected = [testdata_helper.get_task(name='dog', vertical='mammal'),
@@ -69,7 +70,7 @@ class TestView(unittest.TestCase):
                          views.filter_state(app_list=self.test_apps, name_filter=['!cat'], group_filter=None,
                                             type_filter=None,
                                             active_color_only_filter=False,
-                                            status_filter=0, include_jobs=True, include_age=False))
+                                            status_filter=0, include_jobs=True, include_age=False, env_filter=False))
 
     def test_filter_state_group_filter(self):
         expected = [testdata_helper.get_task(name='dog', vertical='mammal'),
@@ -78,7 +79,7 @@ class TestView(unittest.TestCase):
                          views.filter_state(app_list=self.test_apps, name_filter=None, group_filter=['mammal'],
                                             type_filter=None,
                                             active_color_only_filter=False,
-                                            status_filter=0, include_jobs=True, include_age=False))
+                                            status_filter=0, include_jobs=True, include_age=False, env_filter=False))
 
     def test_filter_state_labels_filter(self):
         test_apps = [testdata_helper.get_task(name='dog', vertical='mammal', type="pipeline"),
@@ -87,7 +88,8 @@ class TestView(unittest.TestCase):
         self.assertEqual(expected, views.filter_state(app_list=test_apps, name_filter=None, group_filter=None,
                                                       type_filter=['pipeline'],
                                                       active_color_only_filter=False,
-                                                      status_filter=0, include_jobs=True, include_age=False))
+                                                      status_filter=0, include_jobs=True, include_age=False,
+                                                      env_filter=False))
 
     def test_filter_state_group_and_name_filter(self):
         expected = [testdata_helper.get_task(name='dog', vertical='mammal')]
@@ -95,7 +97,7 @@ class TestView(unittest.TestCase):
                          views.filter_state(app_list=self.test_apps, name_filter=['!cat'], group_filter=['mammal'],
                                             type_filter=None,
                                             active_color_only_filter=False,
-                                            status_filter=0, include_jobs=True, include_age=False))
+                                            status_filter=0, include_jobs=True, include_age=False, env_filter=False))
 
     def test_filter_state_level_filter(self):
         test_apps = [testdata_helper.get_task(status=1, name='dog', vertical='mammal'),
@@ -106,7 +108,7 @@ class TestView(unittest.TestCase):
         self.assertEqual(expected,
                          views.filter_state(app_list=test_apps, name_filter=None, group_filter=None, type_filter=None,
                                             active_color_only_filter=False,
-                                            status_filter=2, include_jobs=True, include_age=False))
+                                            status_filter=2, include_jobs=True, include_age=False, env_filter=False))
 
     def test_filter_state_no_jobs(self):
         test_apps = [testdata_helper.get_task(name='dog', vertical='mammal'),
@@ -122,7 +124,8 @@ class TestView(unittest.TestCase):
         self.assertCountEqual(expected, views.filter_state(app_list=test_apps, name_filter=None, group_filter=None,
                                                            type_filter=None,
                                                            active_color_only_filter=False,
-                                                           status_filter=0, include_jobs=False, include_age=False))
+                                                           status_filter=0, include_jobs=False, include_age=False,
+                                                           env_filter=False))
 
     def test_filter_state_active_color(self):
         test_apps = [testdata_helper.get_task(name='dog', vertical='mammal', color="GRN", active_color="BLU"),
@@ -131,7 +134,20 @@ class TestView(unittest.TestCase):
         self.assertCountEqual(expected, views.filter_state(app_list=test_apps, name_filter=None, group_filter=None,
                                                            type_filter=None,
                                                            active_color_only_filter=True,
-                                                           status_filter=0, include_jobs=True, include_age=False))
+                                                           status_filter=0, include_jobs=True, include_age=False,
+                                                           env_filter=False))
+
+    def test_filter_state_environment(self):
+        test_apps = [
+            testdata_helper.get_task(name='dog', vertical='mammal', color="GRN", active_color="BLU", group='develop'),
+            testdata_helper.get_task(name='cat', vertical='mammal', color="BLU", active_color="BLU", group='live')]
+        expected = [
+            testdata_helper.get_task(name='cat', vertical='mammal', color="BLU", active_color="BLU", group='live')]
+        self.assertCountEqual(expected, views.filter_state(app_list=test_apps, name_filter=None, group_filter=None,
+                                                           type_filter=None,
+                                                           active_color_only_filter=False,
+                                                           status_filter=0, include_jobs=True, include_age=False,
+                                                           env_filter=['live']))
 
     def test_transform_to_display_data(self):
         test_apps = [testdata_helper.get_task(status=1, name='dog', vertical='mammal'),
