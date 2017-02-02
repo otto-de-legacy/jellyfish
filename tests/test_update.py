@@ -29,7 +29,9 @@ class TestView(unittest.TestCase):
                         "blacklist": [".*marathon-healthcheck"],
                         "root_app_lable": "ROOT_APP",
                         "status_path_lable": "STATUS_PATH",
-                        "base_domain": "some-domain.com"}
+                        "base_domain": "some-domain.com",
+                        "graphite": {"cpu": "http://graphite.cpu.{0}.{1}.{2}.com",
+                                     "mem": "http://graphite.mem.{0}.{1}.{2}.com"}}
         cls.app = {"id": "/group/vertical/name",
                    "env": {"STATUS_PATH": "/service/internal/status"},
                    "instances": 1,
@@ -53,8 +55,8 @@ class TestView(unittest.TestCase):
                                        "mem": 4}]}
         cls.marathon_apps_json = json.dumps(cls.marathon_apps)
 
-        cls.graphite_url_mem = "http://graphite.otto.nexinto.com/render?format=json&from=-14d&target=maxSeries(limit(aliasByNode(sortByMaxima(removeAbovePercentile(servers.de.otto.ov.lhotse.mesos-*.Docker.docker.container.{0}.{1}.{2}{3}.mem.rss, 99.0)),5),10))"
-        cls.graphite_url_cpu = "http://graphite.otto.nexinto.com/render?format=json&from=-14d&target=maxSeries(limit(aliasByNode(sortByMaxima(removeAbovePercentile(movingAverage(scaleToSeconds(nonNegativeDerivative(scale(servers.de.otto.ov.lhotse.mesos-*.Docker.docker.container.{0}.{1}.{2}{3}.cpu.user,%200.01)),1),20), 99.0)),5),10))"
+        cls.graphite_url_mem = "http://graphite.mem.{0}.{1}.{2}.com"
+        cls.graphite_url_cpu = "http://graphite.cpu.{0}.{1}.{2}.com"
 
     def setUp(self):
         config.rdb.flushall()
@@ -68,7 +70,8 @@ class TestView(unittest.TestCase):
         self.assertEquals(None, config.rdb.get(self.marathon['host'] + '-errors'))
 
     def test_get_apps_401(self, mock):
-        mock.register_uri('GET', "http://username:password@some-marathon.com/v2/apps", text="some html", status_code=401)
+        mock.register_uri('GET', "http://username:password@some-marathon.com/v2/apps", text="some html",
+                          status_code=401)
         self.assertEquals([], update.get_apps(self.marathon))
         self.assertEqual(None, config.rdb.get(self.marathon['host'] + '-cache'))
         self.assertEquals(b'could not read marathon: some-marathon.com [ JSONDecodeError ]',
@@ -90,7 +93,8 @@ class TestView(unittest.TestCase):
                               config.rdb.get(self.marathon['host'] + '-cache').decode())
         self.assertEquals(None, config.rdb.get(self.marathon['host'] + '-errors'))
 
-        mock.register_uri('GET', "http://username:password@some-marathon.com/v2/apps", text="some html", status_code=401)
+        mock.register_uri('GET', "http://username:password@some-marathon.com/v2/apps", text="some html",
+                          status_code=401)
         self.assertEquals(self.marathon_apps["apps"], update.get_apps(self.marathon))
         self.assertCountEqual(json.dumps(self.marathon_apps['apps']),
                               config.rdb.get(self.marathon['host'] + '-cache').decode())
@@ -107,18 +111,23 @@ class TestView(unittest.TestCase):
         self.assertEquals("http://name.vertical.group.domain.de/status_path",
                           update.get_status_url("name", "group", "vertical", "", "domain.de", "/status_path", None, {}))
         self.assertEquals("http://vertical.group.domain.de/status_path",
-                          update.get_status_url("vertical", "group", "vertical", "", "domain.de", "/status_path", True, {}))
+                          update.get_status_url("vertical", "group", "vertical", "", "domain.de", "/status_path", True,
+                                                {}))
         self.assertEquals("http://vertical.group.domain.de/status_path",
                           update.get_status_url("name", "group", "vertical", "", "domain.de", "/status_path", True, {}))
         self.assertEquals("http://name.subgroup.vertical.group.domain.de/status_path",
-                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path", None, {}))
+                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path",
+                                                None, {}))
         self.assertEquals("http://vertical.group.domain.de/status_path",
-                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path", True, {}))
+                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path",
+                                                True, {}))
         self.assertEquals("http://vertical.group.domain.de/status_path",
-                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path", True,
+                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path",
+                                                True,
                                                 {"status_path": {"dog": "wololololololo"}}))
         self.assertEquals("http://group.alternate_status_path/status_path",
-                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path", True,
+                          update.get_status_url("name", "group", "vertical", "subgroup", "domain.de", "/status_path",
+                                                True,
                                                 {"status_path": {
                                                     "name": "http://{environment}.alternate_status_path/status_path"}}))
 
@@ -477,7 +486,8 @@ class TestView(unittest.TestCase):
                           text=json.dumps(cpu))
 
         self.assertDictEqual({'max_cpu': 19, 'max_mem': 130},
-                             update.get_peak_resource_usage('service', 'vertical', 'env', None))
+                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
+                                                            'service', 'vertical', 'env', None))
 
     def test_get_peak_resource_usage_with_color(self, mock):
         mem = [
@@ -516,7 +526,8 @@ class TestView(unittest.TestCase):
                           text=json.dumps(cpu))
 
         self.assertDictEqual({'max_cpu': 19, 'max_mem': 130},
-                             update.get_peak_resource_usage('service', 'vertical', 'env', 'color'))
+                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
+                                                            'service', 'vertical', 'env', 'color'))
 
     def test_get_peak_resource_usage_None_Values(self, mock):
         mem = [
@@ -559,7 +570,8 @@ class TestView(unittest.TestCase):
                           text=json.dumps(cpu))
 
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 130},
-                             update.get_peak_resource_usage('service', 'vertical', 'env', None))
+                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
+                                                            'service', 'vertical', 'env', None))
 
     def test_get_peak_resource_usage_500(self, mock):
         mock.register_uri('GET',
@@ -570,9 +582,11 @@ class TestView(unittest.TestCase):
                           text="some html", status_code=500)
 
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
-                             update.get_peak_resource_usage('service', 'vertical', 'env', None))
+                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
+                                                            'service', 'vertical', 'env', None))
 
     @mock.patch('requests.get', side_effect=requests.exceptions.Timeout)
     def test_get_peak_resource_usage_graphite_not_available(self, *_):
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
-                             update.get_peak_resource_usage('service', 'vertical', 'env', None))
+                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
+                                                            'service', 'vertical', 'env', None))

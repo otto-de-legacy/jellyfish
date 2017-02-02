@@ -18,6 +18,9 @@ marathons:
     root_app_lable: ROOT_APP
     status_path_lable: STATUS_PATH
     domain: some-domain.com
+    graphite:
+      cpu: http://graphite.cpu.{0}.{1}.{2}.com
+      mem: http://graphite.mem.{0}.{1}.{2}.com
 services:
   - id: /{environment}/order/order
     url: http://order.{environment}.some-domain/service/internal/status

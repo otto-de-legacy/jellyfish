@@ -132,7 +132,7 @@ def get_task_info(app, cfg):
         task["jobs"] = dict()
 
     if task["marathon"]["instances"] > 0:
-        resources = get_peak_resource_usage(task["name"], task["vertical"], task["group"],
+        resources = get_peak_resource_usage(cfg['graphite']['cpu'], cfg['graphite']['mem'], task["name"], task["vertical"], task["group"],
                                             task["color"] if 'blu' in task["id"] or 'grn' in task["id"] else None)
         task["marathon"]["max_cpu"] = resources["max_cpu"]
         task["marathon"]["max_mem"] = resources["max_mem"]
@@ -261,14 +261,14 @@ def status_level(status):
     return level
 
 
-def get_peak_resource_usage(service, vertical, env, color):
+def get_peak_resource_usage(base_url_cpu, base_url_mem, service, vertical, env, color):
     if color:
         color = "-" + color.lower()
     else:
         color = ""
-    graphite_url_mem = "http://graphite.otto.nexinto.com/render?format=json&from=-14d&target=maxSeries(limit(aliasByNode(sortByMaxima(removeAbovePercentile(servers.de.otto.ov.lhotse.mesos-*.Docker.docker.container.{0}.{1}.{2}{3}.mem.rss, 99.0)),5),10))".format(
+    graphite_url_mem = base_url_mem.format(
         env, vertical, service, color)
-    graphite_url_cpu = "http://graphite.otto.nexinto.com/render?format=json&from=-14d&target=maxSeries(limit(aliasByNode(sortByMaxima(removeAbovePercentile(movingAverage(scaleToSeconds(nonNegativeDerivative(scale(servers.de.otto.ov.lhotse.mesos-*.Docker.docker.container.{0}.{1}.{2}{3}.cpu.user,%200.01)),1),20), 99.0)),5),10))".format(
+    graphite_url_cpu = base_url_cpu.format(
         env, vertical, service, color)
 
     try:

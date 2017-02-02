@@ -47,8 +47,7 @@ def get_filter_lists(l):
 
 
 def filter_state(app_list, name_filter, group_filter, type_filter, active_color_only_filter, status_filter,
-                 include_jobs,
-                 include_age):
+                 include_jobs, include_age):
     if name_filter:
         include_names, exclude_names = get_filter_lists(name_filter)
     if group_filter:

@@ -35,7 +35,7 @@ while getopts "h-:" opt; do
   esac
 done
 
-useVirtualEnv() {
+createVirtualEnv() {
   if [ -d "venv" ]; then
     echo -e "\x1b[1m\x1b[33mFound venv. Deleting.\x1b[0m"
     rm -rf venv
@@ -43,21 +43,20 @@ useVirtualEnv() {
   echo -e "\x1b[1mPreparing VirtualEnv\x1b[0m"
   python3 -m pip install --user virtualenv
   python3 -m virtualenv venv
-  source venv/bin/activate
 }
 
 python3 get-pip.py --user
 
 if ${VENV}; then
-  useVirtualEnv
-  python3 -m pip install --upgrade pip
+  createVirtualEnv
+  ./venv/bin/pip install --upgrade pip
 else
   echo -e "\x1b[1m\x1b[31m\nInstalling packages globally. This may need root privileges.\x1b[0m"
 fi
 
-python3 -m pip install -r requirements.txt
+./venv/bin/pip install -r requirements.txt
 
 if ${DOCS_DEPS}; then
     echo -e "\x1b[1mInstalling dependencies for docs\x1b[0m"
-    python3 -m pip install -r docs/requirements.txt
+    ./venv/bin/pip install -r docs/requirements.txt
 fi
