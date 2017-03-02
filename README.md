@@ -64,7 +64,7 @@ There is a dashboard mode: /monitor/cinema.
 ## Severity rating and sorting
 Services are sorted by their severity rating, which is calculated from all instances of one service.
 
-Live Problems are always more severe than non-live Problems (Status Rating multiplied by 100).
+Live problems are always more severe than non-live problems (Status Rating multiplied by 100).
  
 Errors are always more severe than any other status (Status Rating multiplied by 10).
 
