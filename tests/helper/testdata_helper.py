@@ -8,6 +8,7 @@ def get_task(id="/group/vertical/name", group="group", vertical="vertical", name
              status_page_status_code=200,
              jobs=None, marathon=None,
              marathon_link='http://some-marathon.com/ui/#/apps/%2Fgroup%2Fvertical%2Fname',
+             severity=0,
              type=None):
     return {
         "id": id,
@@ -19,6 +20,7 @@ def get_task(id="/group/vertical/name", group="group", vertical="vertical", name
         "subgroup": '',
         "active_color": active_color,
         "status": status,
+        "severity": severity,
         "app_status": app_status,
         "status_url": status_url,
         "status_page_status_code": status_page_status_code,

@@ -1,9 +1,11 @@
 import json
 import logging
+from pprint import pprint
 
 from delorean import Delorean, parse
 from dotmap import DotMap
 from flask import request, url_for, jsonify, Blueprint, redirect
+from setuptools.namespaces import flatten
 
 from app import config
 from app import view_util
@@ -97,6 +99,23 @@ def transform_to_display_data(apps):
     return display_data.toDict()
 
 
+def list_services_by_severity(transformed_data):
+    severity_list = {}
+    for vertical, services in transformed_data.items():
+        severity_list[vertical] = sorted(services,
+                                         key=lambda service_name: sum_severity_per_service(services[service_name]),
+                                         reverse=True)
+    return severity_list
+
+
+def sum_severity_per_service(service):
+    service_severity = 0
+    for group_name, group in service.items():
+        for color_name, color in group.items():
+            service_severity += color['severity']
+    return service_severity
+
+
 def get_app_resource_allocation(tasks):
     app_resources = DotMap()
     vertical_resources = DotMap()
@@ -113,7 +132,7 @@ def get_app_resource_allocation(tasks):
                 add_to(vertical_resources, task["vertical"], None, None, field, value)
 
     for task in tasks:
-        if not "marathon" in task:
+        if "marathon" not in task:
             for field in ['cpu', 'mem', 'max_cpu', 'max_mem']:
                 add_to(app_resources, task["vertical"], task["name"], task["full-name"], field, 0)
                 add_to(vertical_resources, task["vertical"], None, None, field, 0)
@@ -210,9 +229,14 @@ def monitor(cinema_mode=False):
                                  include_age=include_age,
                                  env_filter=env_filter)
     vertical_resource_allocation, app_resource_allocation = get_app_resource_allocation(app_list)
+    transformed_data = transform_to_display_data(filtered_apps)
+
+    # pprint(transformed_data['p13n']['productsearch'])
+    # transformed_data['p13n']['productsearch']['live']['GRN']['severity'] = 300
     return view_util.render("jellyfish.html",
                             "Jellyfish",
-                            state=transform_to_display_data(filtered_apps),
+                            state=transformed_data,
+                            services_by_severity=list_services_by_severity(transformed_data),
                             vertical_ressources=vertical_resource_allocation,
                             app_ressources=app_resource_allocation,
                             tabs=get_tabs(app_list),

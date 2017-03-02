@@ -160,6 +160,37 @@ class TestView(unittest.TestCase):
             'fish': {'salmon': {'group': {'GRN': testdata_helper.get_task(status=3, name='salmon', vertical='fish')}}}}
         self.assertDictEqual(expected, views.transform_to_display_data(test_apps))
 
+    def test_sum_severity_per_service(self):
+        dog = {'develop': {'GRN': testdata_helper.get_task(status=1, severity=1, name='dog', vertical='mammal')}}
+        tuna = {'develop': {'GRN': testdata_helper.get_task(status=3, severity=3, name='salmon', vertical='fish'),
+                            'BLU': testdata_helper.get_task(status=1, severity=1, name='salmon',
+                                                            vertical='fish')}}
+        self.assertEquals(4, views.sum_severity_per_service(tuna))
+        self.assertEquals(1, views.sum_severity_per_service(dog))
+
+    def test_list_service_by_severity(self):
+        transformed_data = {
+            'all': {
+                'mammal-dog': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='dog', vertical='mammal')}},
+                'fish-salmon':
+                    {'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='salmon', vertical='fish'),
+                               'BLU': testdata_helper.get_task(status=1, severity=1, name='tuna', vertical='fish')}}},
+            'mammal': {
+                'dog': {
+                    'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='dog', vertical='mammal')}},
+                'cat': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='cat', vertical='mammal')}}},
+            'fish': {
+                'salmon': {
+                    'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='salmon', vertical='fish'),
+                              'BLU': testdata_helper.get_task(status=1, severity=1, name='tuna', vertical='fish')}}}}
+        expected = {
+            'all': ['mammal-dog', 'fish-salmon'],
+            'mammal': ['cat', 'dog'],
+            'fish': ['salmon']}
+        self.assertEquals(expected, views.list_services_by_severity(transformed_data))
+
     def test_get_tabs(self):
         test_apps = [testdata_helper.get_task(status=1, name='dog', vertical='mammal'),
                      testdata_helper.get_task(status=2, name='cat', vertical='mammal'),

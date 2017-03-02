@@ -2,6 +2,7 @@
 import json
 import pickle
 import re
+from pprint import pprint
 from threading import Timer
 from urllib.parse import quote_plus
 
@@ -144,6 +145,7 @@ def get_task_info(app, cfg):
         task["marathon"]["max_mem"] = 0
 
     task["status"] = overall_status(task)
+    task["severity"] = calculate_severity(task)
     return task
 
 
@@ -164,6 +166,7 @@ def get_service_info(service):
         task["jobs"][job] = get_job_info(job_info)
 
     task["status"] = task["app_status"]
+    task["severity"] = calculate_severity(task)
     return task
 
 
@@ -232,6 +235,10 @@ def itemize_app_id(app_id):
     else:
         color = 'GRN'
     return group, vertical, subgroup, name, color
+
+
+def calculate_severity(task):
+    return task["status"] * (10 if task["status"] == 3 else 1) * (100 if task['group'] == 'live' else 1)
 
 
 def overall_status(task):

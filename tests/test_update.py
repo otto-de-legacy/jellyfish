@@ -228,30 +228,31 @@ class TestView(unittest.TestCase):
                 }))
 
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
-    def test_get_task_info_with_out_color(self, mock, *_):
+    def test_get_task_info_with_out_color(self, request_mock, *_):
         status = testdata_helper.get_status()
-        mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
-                          text=json.dumps(status),
-                          headers={'x-color': 'GRN'})
+        request_mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
+                                  text=json.dumps(status),
+                                  headers={'x-color': 'GRN'})
         expected = testdata_helper.get_task()
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
-        self.assertEquals(1, len(mock.request_history))
+        self.assertEquals(1, len(request_mock.request_history))
         self.assertEquals("http://name.vertical.group.some-domain.com/service/internal/status",
-                          mock.request_history[0].url)
+                          request_mock.request_history[0].url)
 
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
-    def test_get_task_info_visit_staged(self, mock, *_):
+    def test_get_task_info_visit_staged(self, request_mock, *_):
         status = testdata_helper.get_status()
         staged_status = testdata_helper.get_status(status="ERROR")
-        mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
-                          text=json.dumps(status),
-                          headers={'x-color': 'BLU'})
-        mock.register_uri('GET', "http://staged.name.vertical.group.some-domain.com/service/internal/status",
-                          text=json.dumps(staged_status),
-                          headers={'x-color': 'BLU'})
+        request_mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
+                                  text=json.dumps(status),
+                                  headers={'x-color': 'BLU'})
+        request_mock.register_uri('GET', "http://staged.name.vertical.group.some-domain.com/service/internal/status",
+                                  text=json.dumps(staged_status),
+                                  headers={'x-color': 'BLU'})
 
         expected_inactive = testdata_helper.get_task(id="/group/vertical/name/GRN",
-                                                     app_status=3, status=3, active_color="BLU", color="GRN",
+                                                     app_status=3, status=3, severity=30, active_color="BLU",
+                                                     color="GRN",
                                                      status_url='http://staged.name.vertical.group.some-domain.com/service/internal/status',
                                                      marathon_link='http://some-marathon.com/ui/#/apps/%2Fgroup%2Fvertical%2Fname%2FGRN')
         expected_active = testdata_helper.get_task(id="/group/vertical/name/BLU",
@@ -266,13 +267,13 @@ class TestView(unittest.TestCase):
 
         self.assertDictEqual(expected_inactive, update.get_task_info(app_inactive, self.marathon))
         self.assertDictEqual(expected_active, update.get_task_info(app_active, self.marathon))
-        self.assertEquals(3, len(mock.request_history))
+        self.assertEquals(3, len(request_mock.request_history))
         self.assertEquals("http://name.vertical.group.some-domain.com/service/internal/status",
-                          mock.request_history[0].url)
+                          request_mock.request_history[0].url)
         self.assertEquals("http://staged.name.vertical.group.some-domain.com/service/internal/status",
-                          mock.request_history[1].url)
+                          request_mock.request_history[1].url)
         self.assertEquals("http://name.vertical.group.some-domain.com/service/internal/status",
-                          mock.request_history[2].url)
+                          request_mock.request_history[2].url)
 
     @mock.patch('app.update.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
@@ -289,20 +290,42 @@ class TestView(unittest.TestCase):
     @mock.patch('app.update.get_application_status', return_value=[{}, None, 404])
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_status_page_not_available(self, *_):
-        expected = testdata_helper.get_task(status=1, app_status=1, status_page_status_code=404, version="UNKNOWN",
+        expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            status_page_status_code=404,
+                                            version="UNKNOWN",
                                             active_color=None, jobs={})
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.update.get_application_status', return_value=[{}, None, 503])
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_status_page_503(self, *_):
-        expected = testdata_helper.get_task(status=3, app_status=1, status_page_status_code=503, version="UNKNOWN",
+        expected = testdata_helper.get_task(status=3, app_status=1, severity=30,
+                                            status_page_status_code=503,
+                                            version="UNKNOWN",
                                             active_color=None, jobs={})
+
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
+
+    @mock.patch('app.update.get_application_status', return_value=[{}, None, 503])
+    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
+    def test_get_task_info_status_page_503_in_live(self, *_):
+        expected = testdata_helper.get_task(id='/live/vertical/name',
+                                            group='live',
+                                            status_url='http://name.vertical.live.some-domain.com/service/internal/status',
+                                            marathon_link='http://some-marathon.com/ui/#/apps/%2Flive%2Fvertical%2Fname',
+                                            status=3, app_status=1, severity=3000,
+                                            status_page_status_code=503,
+                                            version="UNKNOWN",
+                                            active_color=None, jobs={})
+        live_app = self.app.copy()
+        live_app["id"] = "/live/vertical/name"
+        self.assertDictEqual(expected, update.get_task_info(live_app, self.marathon))
 
     @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_no_status_page(self, *_):
-        expected = testdata_helper.get_task(status=1, app_status=1, status_url='', status_page_status_code=None,
+        expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            status_url='',
+                                            status_page_status_code=None,
                                             version="UNKNOWN",
                                             active_color=None, jobs={})
         app = self.app.copy()
@@ -310,7 +333,8 @@ class TestView(unittest.TestCase):
         self.assertDictEqual(expected, update.get_task_info(app, self.marathon))
 
     def test_get_task_info_suspended(self, _):
-        expected = testdata_helper.get_task(status=1, app_status=1, status_page_status_code=None,
+        expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            status_page_status_code=None,
                                             version="UNKNOWN",
                                             active_color=None, jobs={},
                                             instances=0, max_cpu=0, max_mem=0)
@@ -318,53 +342,53 @@ class TestView(unittest.TestCase):
         app["instances"] = 0
         self.assertDictEqual(expected, update.get_task_info(app, self.marathon))
 
-    def test_get_application_status_200(self, mock):
+    def test_get_application_status_200(self, request_mock):
         status = testdata_helper.get_status()
-        mock.register_uri('GET', "http://some-status-url/status", text=json.dumps(status),
-                          headers={'x-color': 'GRN'})
+        request_mock.register_uri('GET', "http://some-status-url/status", text=json.dumps(status),
+                                  headers={'x-color': 'GRN'})
 
         app_status, active_color, status_code = update.get_application_status("http://some-status-url/status", {})
         self.assertEquals(status, app_status)
         self.assertEquals("GRN", active_color)
         self.assertEquals(200, status_code)
 
-    def test_get_application_status_with_cookies(self, mock):
-        mock.register_uri('GET', "http://some-status-url/status", status_code=200)
+    def test_get_application_status_with_cookies(self, request_mock):
+        request_mock.register_uri('GET', "http://some-status-url/status", status_code=200)
 
         app_status, active_color, status_code = update.get_application_status("http://some-status-url/status",
                                                                               {'cookies': {"cake": "strawberry"}})
         self.assertEquals({}, app_status)
         self.assertEquals(None, active_color)
         self.assertEquals(200, status_code)
-        cookies = mock.request_history[0]._request._cookies._cookies['']['/']
+        cookies = request_mock.request_history[0]._request._cookies._cookies['']['/']
         self.assertEquals(1, len(cookies))
         self.assertEquals({"cake": "strawberry"}, {cookies['cake'].name: cookies['cake'].value})
 
-    def test_get_application_status_with_headers(self, mock):
-        mock.register_uri('GET', "http://some-status-url/status", status_code=200)
+    def test_get_application_status_with_headers(self, request_mock):
+        request_mock.register_uri('GET', "http://some-status-url/status", status_code=200)
 
         app_status, active_color, status_code = update.get_application_status("http://some-status-url/status",
                                                                               {'headers': {"Accept": "strawberry"}})
         self.assertEquals({}, app_status)
         self.assertEquals(None, active_color)
         self.assertEquals(200, status_code)
-        self.assertEquals("strawberry", mock.request_history[0]._request.headers['Accept'])
+        self.assertEquals("strawberry", request_mock.request_history[0]._request.headers['Accept'])
 
-    def test_get_application_status_400(self, mock):
-        mock.register_uri('GET', "http://some-status-url/status", status_code=400)
+    def test_get_application_status_400(self, request_mock):
+        request_mock.register_uri('GET', "http://some-status-url/status", status_code=400)
 
         app_status, active_color, status_code = update.get_application_status("http://some-status-url/status", {})
         self.assertEquals({}, app_status)
         self.assertEquals(None, active_color)
         self.assertEquals(400, status_code)
 
-    def test_get_application_status_not_available(self, mock):
+    def test_get_application_status_not_available(self, request_mock):
         tmp = requests.get
         requests.get = MagicMock(side_effect=requests.exceptions.Timeout)
 
         app_status, active_color, status_code = update.get_application_status("http://some-status-url/status", {})
         self.assertEquals({}, app_status)
-        self.assertEquals(0, len(mock.request_history))
+        self.assertEquals(0, len(request_mock.request_history))
         self.assertEquals(None, active_color)
         self.assertEquals(None, status_code)
         requests.get = tmp
@@ -489,7 +513,7 @@ class TestView(unittest.TestCase):
                              update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
                                                             'service', 'vertical', 'env', None))
 
-    def test_get_peak_resource_usage_with_color(self, mock):
+    def test_get_peak_resource_usage_with_color(self, request_mock):
         mem = [
             {
                 "target": "blubb",
@@ -518,18 +542,18 @@ class TestView(unittest.TestCase):
                     ]
                 ]
             }]
-        mock.register_uri('GET',
-                          self.graphite_url_mem.format("env", "vertical", "service", "-color"),
-                          text=json.dumps(mem))
-        mock.register_uri('GET',
-                          self.graphite_url_cpu.format("env", "vertical", "service", "-color"),
-                          text=json.dumps(cpu))
+        request_mock.register_uri('GET',
+                                  self.graphite_url_mem.format("env", "vertical", "service", "-color"),
+                                  text=json.dumps(mem))
+        request_mock.register_uri('GET',
+                                  self.graphite_url_cpu.format("env", "vertical", "service", "-color"),
+                                  text=json.dumps(cpu))
 
         self.assertDictEqual({'max_cpu': 19, 'max_mem': 130},
                              update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
                                                             'service', 'vertical', 'env', 'color'))
 
-    def test_get_peak_resource_usage_None_Values(self, mock):
+    def test_get_peak_resource_usage_None_Values(self, request_mock):
         mem = [
             {
                 "target": "blubb",
@@ -562,24 +586,24 @@ class TestView(unittest.TestCase):
                     ]
                 ]
             }]
-        mock.register_uri('GET',
-                          self.graphite_url_mem.format("env", "vertical", "service", ""),
-                          text=json.dumps(mem))
-        mock.register_uri('GET',
-                          self.graphite_url_cpu.format("env", "vertical", "service", ""),
-                          text=json.dumps(cpu))
+        request_mock.register_uri('GET',
+                                  self.graphite_url_mem.format("env", "vertical", "service", ""),
+                                  text=json.dumps(mem))
+        request_mock.register_uri('GET',
+                                  self.graphite_url_cpu.format("env", "vertical", "service", ""),
+                                  text=json.dumps(cpu))
 
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 130},
                              update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
                                                             'service', 'vertical', 'env', None))
 
-    def test_get_peak_resource_usage_500(self, mock):
-        mock.register_uri('GET',
-                          self.graphite_url_mem.format("env", "vertical", "service", ""),
-                          text="some html", status_code=500)
-        mock.register_uri('GET',
-                          self.graphite_url_cpu.format("env", "vertical", "service", ""),
-                          text="some html", status_code=500)
+    def test_get_peak_resource_usage_500(self, request_mock):
+        request_mock.register_uri('GET',
+                                  self.graphite_url_mem.format("env", "vertical", "service", ""),
+                                  text="some html", status_code=500)
+        request_mock.register_uri('GET',
+                                  self.graphite_url_cpu.format("env", "vertical", "service", ""),
+                                  text="some html", status_code=500)
 
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
                              update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
@@ -590,3 +614,9 @@ class TestView(unittest.TestCase):
         self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
                              update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
                                                             'service', 'vertical', 'env', None))
+
+    def test_calculate_severity(self, _):
+        self.assertEquals(1, update.calculate_severity({'status': 1, 'group': 'develop'}))
+        self.assertEquals(30, update.calculate_severity({'status': 3, 'group': 'develop'}))
+        self.assertEquals(100, update.calculate_severity({'status': 1, 'group': 'live'}))
+        self.assertEquals(3000, update.calculate_severity({'status': 3, 'group': 'live'}))
