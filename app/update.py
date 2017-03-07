@@ -23,7 +23,7 @@ def update_marathon(thread_id, cfg, interval, greedy=False):
     for app in app_list:
         try:
             _, _, _, app_name, _ = itemize_app_id(app["id"])
-            if not re.match(blacklist, app_name):
+            if not re.match(blacklist, app["id"]):
                 config.rdb.sadd("all-services", app["id"])
                 config.rdb.set(app["id"], json.dumps(get_task_info(app, cfg)))
                 tasks.append(app["id"])
