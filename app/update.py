@@ -107,6 +107,7 @@ def get_task_info(app, cfg):
 
     root_app = get_in_dict(["env", cfg.get("root_app_lable")], app, "") or \
                get_in_dict(["labels", cfg.get("root_app_lable")], app, "")
+    root_app = root_app == 'true' or root_app == 'True'
     status_path = get_in_dict(["env", cfg.get("status_path_lable")], app, "") or \
                   get_in_dict(["labels", cfg.get("status_path_lable")], app, "")
     task["status_url"] = get_status_url(task["name"], task["group"], task["vertical"], task["subgroup"],
