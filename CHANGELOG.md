@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.15.1] - 2017-03-27
 ### Fixed
-- Proberly convert root_app flag into boolean. 
+- Properly convert root_app flag into boolean. 
 
 
 ## [0.15.0] - 2017-03-2
