@@ -59,9 +59,12 @@ def start_tasks(config_file, greedy_mode):
     if 'services' in config_file:
         service_list = list()
         for service in config_file['services']:
-            for env in config_file['environments']:
-                service_list.append({'id': service['id'].replace('{environment}', env['name']),
-                                     'url': service['url'].replace('{environment}', env['name'])})
+            if '{environment}' in service['id']:
+                for env in config_file['environments']:
+                    service_list.append({'id': service['id'].replace('{environment}', env['name']),
+                                         'url': service['url'].replace('{environment}', env['name'])})
+            else:
+                service_list.append({'id': service['id'], 'url': service['url']})
         start_thread_timer("single_services", update.update_service, service_list, greedy_mode)
 
 
