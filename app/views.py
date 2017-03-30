@@ -212,9 +212,9 @@ def index():
 @blueprint.route('/monitor', methods=['GET'])
 def monitor(cinema_mode=False):
     group_filter, name_filter, status_filter, type_filter, env_filter = get_filter_values()
-    active_color_filter = request.args.get('active_color_only', "false") == 'true'
+    active_color_filter = request.args.get('active_color_only', 'false') == 'true'
     status_filter = int(request.args.get('level', 0))
-    include_jobs = request.args.get('jobs', "true") == 'true'
+    include_jobs = request.args.get('jobs', 'true') == 'true'
     include_age = request.args.get('status_age', "true") == 'true'
     auto_refresh = request.args.get('refresh', False)
 

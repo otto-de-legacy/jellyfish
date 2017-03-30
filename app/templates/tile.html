@@ -1,6 +1,6 @@
 {%- for color in service | sort %}
 {% set app = service[color] %}
-<div class="well well-sm
+<div class="well well-sm well-border-fix
 {% if app.status == 1 %}
     well-unknown
 {% elif app.status == 2 %}
