@@ -67,8 +67,8 @@
     border-left: 15px solid #8e929b;
 }
 
-span.glyphicon-thumbs-up {
-    font-size: 10.2em;
+div.glyphicon-thumbs-up {
+    font-size: 500%;
 }
 
 .expand_button {
