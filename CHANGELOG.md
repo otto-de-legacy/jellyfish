@@ -3,22 +3,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Unreleased](https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD)
 
-## [1.0.0] - 2017-05-19
+## [1.0.0](https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD) - 2017-05-19
 ### Removed
 - resource view feature was removed.
 
-## [0.15.1] - 2017-03-27
+## [0.15.1](https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1) - 2017-03-27
 ### Fixed
 - Properly convert root_app flag into boolean. 
 
 
-## [0.15.0] - 2017-03-2
+## [0.15.0](https://github.com/otto-de/jellyfish/compare/0.14.0...0.15.0) - 2017-03-2
 ### Add
 - Severity rating and sorting of services.
 
-## [0.14.0] - 2016-11-9
+## [0.14.0](https://github.com/otto-de/jellyfish/compare/d0ff089a5409d9e7e00150b381e9c01a34bb9e5d...0.14.0) - 2016-11-9
 ### Add
 - Tidy up resource overview.
 - Mini pie charts for resource overview.
@@ -153,10 +153,3 @@ First release of Jellyfish.
 - Status page of all colors of an app identical.
 
 This changelog is inspired by [keepachangelog.com](http://http://keepachangelog.com/de/)
-[Unreleased]: https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD
-[0.14.0]: https://github.com/otto-de/jellyfish/compare/d0ff089a5409d9e7e00150b381e9c01a34bb9e5d...0.14.0
-[0.15.0]: https://github.com/otto-de/jellyfish/compare/0.14.0...0.15.0
-[0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
-[0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
-[0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
-[1.0.0]: https///github.com/otto-de/jellyfish/compare/0.15.1...1.0.0
