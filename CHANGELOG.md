@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2017-05-19
+### Removed
+- resource view feature was removed.
+
 ## [0.15.1] - 2017-03-27
 ### Fixed
 - Properly convert root_app flag into boolean. 
@@ -149,9 +153,10 @@ First release of Jellyfish.
 - Status page of all colors of an app identical.
 
 This changelog is inspired by [keepachangelog.com](http://http://keepachangelog.com/de/)
-[Unreleased]: https://github.com/otto-de/jellyfish/compare/0.15.1...HEAD
+[Unreleased]: https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD
 [0.14.0]: https://github.com/otto-de/jellyfish/compare/d0ff089a5409d9e7e00150b381e9c01a34bb9e5d...0.14.0
 [0.15.0]: https://github.com/otto-de/jellyfish/compare/0.14.0...0.15.0
 [0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
 [0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
 [0.15.1]: https://github.com/otto-de/jellyfish/compare/0.15.0...0.15.1
+[1.0.0]: https///github.com/otto-de/jellyfish/compare/0.15.1...1.0.0
