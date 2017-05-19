@@ -3,7 +3,6 @@ SECRET_KEY = 'you-will-never-guess'
 
 app_name = "Jellyfish"
 navigation_bar = [('views.monitor', 'Status'),
-                  ('views.resourcen', 'Resource Allocation'),
                   ('styleguide.style_guide', 'Style Guide')]
 
 THREAD_SUFFIX = "-thread"

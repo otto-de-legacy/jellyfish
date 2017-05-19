@@ -199,90 +199,25 @@ class TestView(unittest.TestCase):
 
     def test_get_resource_allocation(self):
         test_apps = [
-            testdata_helper.get_task(status=1, name='dog', vertical='mammal', instances=2, max_cpu=0.5, max_mem=100),
-            testdata_helper.get_task(status=2, name='cat', vertical='mammal', max_cpu=5, max_mem=110),
-            testdata_helper.get_task(status=3, name='salmon', vertical='fish', instances=2, healthy=1, max_cpu=2,
-                                     max_mem=120)]
+            testdata_helper.get_task(status=1, name='dog', vertical='mammal', instances=2),
+            testdata_helper.get_task(status=2, name='cat', vertical='mammal'),
+            testdata_helper.get_task(status=3, name='salmon', vertical='fish', instances=2, healthy=1)]
 
-        expected_vertical = {'all': {'cpu': 5, 'mem': 5120, 'max_cpu': 7.5, 'max_mem': 330},
-                             'mammal': {'cpu': 3, 'mem': 3072, 'max_cpu': 5.5, 'max_mem': 210},
-                             'fish': {'cpu': 2, 'mem': 2048, 'max_cpu': 2, 'max_mem': 120}}
+        expected_vertical = {'all': {'cpu': 5, 'mem': 5120},
+                             'mammal': {'cpu': 3, 'mem': 3072},
+                             'fish': {'cpu': 2, 'mem': 2048}}
         expected_apps = {'all': {'mammal-dog': {'cpu': 2,
-                                                'max_cpu': 0.5,
-                                                'max_mem': 100,
-                                                'mem': 2048,
-                                                'percentage_cpu': 25.0,
-                                                'percentage_mem': 4.8828125},
+                                                'mem': 2048},
                                  'mammal-cat': {'cpu': 1,
-                                                'max_cpu': 5,
-                                                'max_mem': 110,
-                                                'mem': 1024,
-                                                'percentage_cpu': 500.0,
-                                                'percentage_mem': 10.7421875},
+                                                'mem': 1024},
                                  'fish-salmon': {'cpu': 2,
-                                                 'max_cpu': 2,
-                                                 'max_mem': 120,
-                                                 'mem': 2048,
-                                                 'percentage_cpu': 100.0,
-                                                 'percentage_mem': 5.859375}},
+                                                 'mem': 2048}},
                          'mammal': {'dog': {'cpu': 2,
-                                            'max_cpu': 0.5,
-                                            'max_mem': 100,
-                                            'mem': 2048,
-                                            'percentage_cpu': 25.0,
-                                            'percentage_mem': 4.8828125},
+                                            'mem': 2048},
                                     'cat': {'cpu': 1,
-                                            'max_cpu': 5,
-                                            'max_mem': 110,
-                                            'mem': 1024,
-                                            'percentage_cpu': 500.0,
-                                            'percentage_mem': 10.7421875}},
+                                            'mem': 1024}},
                          'fish': {'salmon': {'cpu': 2,
-                                             'max_cpu': 2,
-                                             'max_mem': 120,
-                                             'mem': 2048,
-                                             'percentage_cpu': 100.0,
-                                             'percentage_mem': 5.859375}}}
-
-        vertical, apps = views.get_app_resource_allocation(test_apps)
-        self.assertDictEqual(expected_vertical, vertical)
-        self.assertDictEqual(expected_apps, apps)
-
-    def test_get_resource_allocation_with_non_marathon_services(self):
-        test_apps = [testdata_helper.get_task(status=1, name='dog', vertical='mammal'),
-                     testdata_helper.get_task(status=2, name='cat', vertical='mammal'),
-                     testdata_helper.get_task(status=3, name='salmon', vertical='fish')]
-        del test_apps[1]['marathon']
-
-        expected_vertical = {'all': {'cpu': 2, 'mem': 2048, 'max_cpu': 2.0, 'max_mem': 2048.0},
-                             'mammal': {'cpu': 1, 'mem': 1024, 'max_cpu': 1.0, 'max_mem': 1024.0},
-                             'fish': {'cpu': 1, 'mem': 1024, 'max_cpu': 1.0, 'max_mem': 1024.0}}
-        expected_apps = {'all': {'mammal-cat': {'cpu': 0, 'max_cpu': 0, 'max_mem': 0, 'mem': 0},
-                                 'mammal-dog': {'cpu': 1,
-                                                'max_cpu': 1,
-                                                'max_mem': 1024,
-                                                'mem': 1024,
-                                                'percentage_cpu': 100.0,
-                                                'percentage_mem': 100.0},
-                                 'fish-salmon': {'cpu': 1,
-                                                 'max_cpu': 1,
-                                                 'max_mem': 1024,
-                                                 'mem': 1024,
-                                                 'percentage_cpu': 100.0,
-                                                 'percentage_mem': 100.0}},
-                         'fish': {'salmon': {'cpu': 1,
-                                             'max_cpu': 1,
-                                             'max_mem': 1024,
-                                             'mem': 1024,
-                                             'percentage_cpu': 100.0,
-                                             'percentage_mem': 100.0}},
-                         'mammal': {'cat': {'cpu': 0, 'max_cpu': 0, 'max_mem': 0, 'mem': 0},
-                                    'dog': {'cpu': 1,
-                                            'max_cpu': 1,
-                                            'max_mem': 1024,
-                                            'mem': 1024,
-                                            'percentage_cpu': 100.0,
-                                            'percentage_mem': 100.0}}}
+                                             'mem': 2048}}}
 
         vertical, apps = views.get_app_resource_allocation(test_apps)
         self.assertDictEqual(expected_vertical, vertical)

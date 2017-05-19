@@ -90,8 +90,8 @@
         <span class="glyphicon glyphicon-chevron-down"></span>
     </button>
     <div id="{{vertical}}-{{app.name}}-{{app.group}}-{{app.color}}-info" class="collapse">
-        <div><span class="label label-unflashy">CPU: {{app.marathon.instances * app.marathon.cpu}}   ( {{app.marathon.cpu}} per instance, max usage: {{app.marathon.max_cpu}} )</span></div>
-        <div><span class="label label-unflashy">MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}   ( {{ '{0:,}'.format(app.marathon.mem | int) }} per instance, max usage: {{ '{0:,}'.format(app.marathon.max_mem | round(2) ) }} )</span></div>
+        <div><span class="label label-unflashy">CPU: {{app.marathon.instances * app.marathon.cpu}}   ( {{app.marathon.cpu}} per instance )</span></div>
+        <div><span class="label label-unflashy">MEM: {{ '{0:,}'.format(app.marathon.instances * app.marathon.mem | round(2) ) }}   ( {{ '{0:,}'.format(app.marathon.mem | int) }} per instance )</span></div>
     </div>
     {%- endif %}
     {%- endif %}

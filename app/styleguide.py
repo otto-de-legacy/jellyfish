@@ -21,9 +21,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }, "BLU": {
             "status": 0,
@@ -39,9 +37,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "1b) Non Marathon Application": {"GRN": {
@@ -69,9 +65,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "3) App status is unknown (could not read status page) but marathon tasks are healthy": {"GRN": {
@@ -88,9 +82,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "4) App is suspended (0 of 0 instances)": {"GRN": {
@@ -107,9 +99,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "5) App status is warning": {"GRN": {
@@ -129,9 +119,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "6) App status is error": {"GRN": {
@@ -151,9 +139,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "7) App status of one instance is critical": {"GRN": {
@@ -174,9 +160,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 1,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "8) App is down": {"GRN": {
@@ -194,9 +178,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
         "9) App is healthy but status page is not accessible (status code > 500. possible issue with cname/varnish)": {"GRN": {
@@ -214,9 +196,7 @@ def style_guide():
                 "staged": 0,
                 "unhealthy": 0,
                 "cpu": 1,
-                "mem": 1024,
-                "max_cpu": 0.5,
-                "max_mem": 512
+                "mem": 1024
             }
         }},
     }

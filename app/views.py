@@ -1,11 +1,8 @@
 import json
 import logging
-from pprint import pprint
-
 from delorean import Delorean, parse
 from dotmap import DotMap
 from flask import request, url_for, jsonify, Blueprint, redirect
-from setuptools.namespaces import flatten
 
 from app import config
 from app import view_util
@@ -126,19 +123,12 @@ def get_app_resource_allocation(tasks):
                 sum = task["marathon"]["instances"] * task["marathon"][field]
                 add_to(app_resources, task["vertical"], task["name"], task["full-name"], field, sum)
                 add_to(vertical_resources, task["vertical"], None, None, field, sum)
-            for field in ['max_cpu', 'max_mem']:
-                value = task["marathon"][field] if task["marathon"][field] != 'Unknown' else 0
-                add_to(app_resources, task["vertical"], task["name"], task["full-name"], field, value)
-                add_to(vertical_resources, task["vertical"], None, None, field, value)
 
     for task in tasks:
         if "marathon" not in task:
-            for field in ['cpu', 'mem', 'max_cpu', 'max_mem']:
+            for field in ['cpu', 'mem']:
                 add_to(app_resources, task["vertical"], task["name"], task["full-name"], field, 0)
                 add_to(vertical_resources, task["vertical"], None, None, field, 0)
-        else:
-            for field in ['cpu', 'mem']:
-                calculate_percentage(app_resources, task["vertical"], task["name"], task["full-name"], field)
 
     return vertical_resources.toDict(), app_resources.toDict()
 
@@ -158,27 +148,6 @@ def add_to(dotmap, vertical, name, full_name, field, value):
             dotmap["all"][field] = 0
         dotmap[vertical][field] += value
         dotmap["all"][field] += value
-
-
-def calculate_percentage(dotmap, vertical, name, full_name, field):
-    if name:
-        if dotmap["all"][full_name]['max_' + field] and dotmap[vertical][name]['max_' + field]:
-            dotmap["all"][full_name]['percentage_' + field] = dotmap["all"][full_name]['max_' + field] / \
-                                                              dotmap["all"][full_name][field] * 100
-            dotmap[vertical][name]['percentage_' + field] = dotmap[vertical][name]['max_' + field] / \
-                                                            dotmap[vertical][name][field] * 100
-        else:
-            dotmap["all"][full_name]['percentage_' + field] = 0
-            dotmap[vertical][name]['percentage_' + field] = 0
-    else:
-        if dotmap["all"]['max_' + field] and dotmap[vertical]['max_' + field]:
-            dotmap["all"]['percentage_' + field] = dotmap["all"]['max_' + field] / \
-                                                   dotmap["all"][field] * 100
-            dotmap[vertical]['percentage_' + field] = dotmap[vertical]['max_' + field] / \
-                                                      dotmap[vertical][field] * 100
-        else:
-            dotmap["all"]['percentage_' + field] = 0
-            dotmap[vertical]['percentage_' + field] = 0
 
 
 def get_tabs(app_list):
@@ -231,8 +200,6 @@ def monitor(cinema_mode=False):
     vertical_resource_allocation, app_resource_allocation = get_app_resource_allocation(app_list)
     transformed_data = transform_to_display_data(filtered_apps)
 
-    # pprint(transformed_data['p13n']['productsearch'])
-    # transformed_data['p13n']['productsearch']['live']['GRN']['severity'] = 300
     return view_util.render("jellyfish.html",
                             "Jellyfish",
                             state=transformed_data,
@@ -245,34 +212,6 @@ def monitor(cinema_mode=False):
                                                              env_filter),
                             cinema_mode=cinema_mode,
                             auto_refresh=auto_refresh)
-
-
-@blueprint.route('/resourcen', methods=['GET'])
-def resourcen(cinema_mode=False):
-    group_filter, name_filter, status_filter, type_filter, env_filter = get_filter_values()
-
-    app_list = get_all_apps()
-    filtered_apps = filter_state(app_list=app_list,
-                                 name_filter=name_filter,
-                                 group_filter=group_filter,
-                                 type_filter=type_filter,
-                                 active_color_only_filter=False,
-                                 status_filter=status_filter,
-                                 include_jobs=False,
-                                 include_age=False,
-                                 env_filter=env_filter)
-    vertical_resource_allocation, app_resource_allocation = get_app_resource_allocation(app_list)
-
-    return view_util.render("resourcen.html",
-                            "Jellyfish",
-                            state=transform_to_display_data(filtered_apps),
-                            vertical_ressources=vertical_resource_allocation,
-                            app_ressources=app_resource_allocation,
-                            tabs=get_tabs(app_list),
-                            errors=get_error_messages(app_list),
-                            environments=filter_environments(config.config["environments"],
-                                                             env_filter),
-                            cinema_mode=cinema_mode)
 
 
 def get_filter_values():

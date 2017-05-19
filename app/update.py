@@ -133,18 +133,6 @@ def get_task_info(app, cfg):
         task["app_status"] = status_level("UNKNOWN")
         task["jobs"] = dict()
 
-    graphite_cpu_url = get_in_dict(['graphite', 'cpu'], cfg, "")
-    graphite_mem_url = get_in_dict(['graphite', 'mem'], cfg, "")
-    if task["marathon"]["instances"] > 0 and graphite_cpu_url and graphite_mem_url:
-        resources = get_peak_resource_usage(graphite_cpu_url, graphite_mem_url, task["name"], task["vertical"],
-                                            task["group"],
-                                            task["color"] if 'blu' in task["id"] or 'grn' in task["id"] else None)
-        task["marathon"]["max_cpu"] = resources["max_cpu"]
-        task["marathon"]["max_mem"] = resources["max_mem"]
-    else:
-        task["marathon"]["max_cpu"] = 0
-        task["marathon"]["max_mem"] = 0
-
     task["status"] = overall_status(task)
     task["severity"] = calculate_severity(task)
     return task
@@ -270,42 +258,3 @@ def status_level(status):
     if status == "ERROR":
         level = 3
     return level
-
-
-def get_peak_resource_usage(base_url_cpu, base_url_mem, service, vertical, env, color):
-    if color:
-        color = "-" + color.lower()
-    else:
-        color = ""
-    graphite_url_mem = base_url_mem.format(
-        env, vertical, service, color)
-    graphite_url_cpu = base_url_cpu.format(
-        env, vertical, service, color)
-
-    try:
-        mem_result = requests.get(graphite_url_mem, headers={"Accept": "application/json"}, verify=False, timeout=30)
-        mem = round(get_max(json.loads(mem_result.text)[0]['datapoints']) / 1024 / 1024, 2)
-    except (ValueError, IndexError, requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError) as error:
-        logger.warning(
-            ' '.join(
-                ["could not read MEM usage from graphite for :", service + ", " + vertical + ", " + env + " " + "[",
-                 error.__class__.__name__, "]", graphite_url_mem]))
-        mem = 0
-
-    try:
-        cpu_result = requests.get(graphite_url_cpu, headers={"Accept": "application/json"}, verify=False, timeout=30)
-        cpu = round(get_max(json.loads(cpu_result.text)[0]['datapoints']), 2)
-    except (ValueError, IndexError, requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError) as error:
-        logger.warning(
-            ' '.join(
-                ["could not read CPU usage from graphite for :", service + ", " + vertical + ", " + env + " " + "[",
-                 error.__class__.__name__, "]", graphite_url_cpu]))
-        cpu = 0
-
-    return {'max_cpu': cpu, 'max_mem': mem}
-
-
-def get_max(series):
-    return max([p[0] if p[0] else 0 for p in series])

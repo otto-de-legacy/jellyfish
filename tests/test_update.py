@@ -29,9 +29,7 @@ class TestView(unittest.TestCase):
                         "blacklist": [".*marathon-healthcheck"],
                         "root_app_lable": "ROOT_APP",
                         "status_path_lable": "STATUS_PATH",
-                        "base_domain": "some-domain.com",
-                        "graphite": {"cpu": "http://graphite.cpu.{0}.{1}.{2}.com",
-                                     "mem": "http://graphite.mem.{0}.{1}.{2}.com"}}
+                        "base_domain": "some-domain.com"}
         cls.app = {"id": "/group/vertical/name",
                    "env": {"STATUS_PATH": "/service/internal/status"},
                    "instances": 1,
@@ -54,9 +52,6 @@ class TestView(unittest.TestCase):
                                        "cpus": 0.01,
                                        "mem": 4}]}
         cls.marathon_apps_json = json.dumps(cls.marathon_apps)
-
-        cls.graphite_url_mem = "http://graphite.mem.{0}.{1}.{2}.com"
-        cls.graphite_url_cpu = "http://graphite.cpu.{0}.{1}.{2}.com"
 
     def setUp(self):
         config.rdb.flushall()
@@ -227,7 +222,6 @@ class TestView(unittest.TestCase):
                     "running": "some-id"
                 }))
 
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_with_out_color(self, request_mock, *_):
         status = testdata_helper.get_status()
         request_mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
@@ -239,7 +233,6 @@ class TestView(unittest.TestCase):
         self.assertEquals("http://name.vertical.group.some-domain.com/service/internal/status",
                           request_mock.request_history[0].url)
 
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_visit_staged(self, request_mock, *_):
         status = testdata_helper.get_status()
         staged_status = testdata_helper.get_status(status="ERROR")
@@ -276,19 +269,16 @@ class TestView(unittest.TestCase):
                           request_mock.request_history[2].url)
 
     @mock.patch('app.update.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info(self, *_):
         expected = testdata_helper.get_task()
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.update.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_job_does_not_change(self, *_):
         expected = testdata_helper.get_task()
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.update.get_application_status', return_value=[{}, None, 404])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_status_page_not_available(self, *_):
         expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
                                             status_page_status_code=404,
@@ -297,7 +287,6 @@ class TestView(unittest.TestCase):
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.update.get_application_status', return_value=[{}, None, 503])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_status_page_503(self, *_):
         expected = testdata_helper.get_task(status=3, app_status=1, severity=30,
                                             status_page_status_code=503,
@@ -307,7 +296,6 @@ class TestView(unittest.TestCase):
         self.assertDictEqual(expected, update.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.update.get_application_status', return_value=[{}, None, 503])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_status_page_503_in_live(self, *_):
         expected = testdata_helper.get_task(id='/live/vertical/name',
                                             group='live',
@@ -321,7 +309,6 @@ class TestView(unittest.TestCase):
         live_app["id"] = "/live/vertical/name"
         self.assertDictEqual(expected, update.get_task_info(live_app, self.marathon))
 
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_task_info_no_status_page(self, *_):
         expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
                                             status_url='',
@@ -337,7 +324,7 @@ class TestView(unittest.TestCase):
                                             status_page_status_code=None,
                                             version="UNKNOWN",
                                             active_color=None, jobs={},
-                                            instances=0, max_cpu=0, max_mem=0)
+                                            instances=0)
         app = self.app.copy()
         app["instances"] = 0
         self.assertDictEqual(expected, update.get_task_info(app, self.marathon))
@@ -452,168 +439,10 @@ class TestView(unittest.TestCase):
         self.assertEqual({b'/dog-ci/vertical/service', b'/cat/vertical/service'}, config.rdb.smembers('all-services'))
 
     @mock.patch('app.update.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
-    @mock.patch('app.update.get_peak_resource_usage', return_value={'max_cpu': 1, 'max_mem': 1024})
     def test_get_service_info(self, *_):
         expected = testdata_helper.get_task(marathon=None, status_url="http://some-domain.com/service/internal/status")
         del expected["marathon"]
         self.assertDictEqual(expected, update.get_service_info(self.app_server_service))
-
-    def test_get_max(self, _):
-        series = [
-            [0, 66666666],
-            [-12, 66666666],
-            [5, 66666666],
-            [6, 66666666],
-            [7, 66666666],
-            [9, 66666666],
-            [22, 66666666],
-            [110, 66666666],
-            [5, 66666666],
-            [99, 66666666],
-        ]
-        self.assertEqual(110, update.get_max(series))
-
-    def test_get_peak_resource_usage(self, mock):
-        mem = [
-            {
-                "target": "blubb",
-                "datapoints": [
-                    [
-                        130 * 1024 * 1024,
-                        1471003020
-                    ],
-                    [
-                        100,
-                        1471003080
-                    ]
-                ]
-            }]
-        cpu = [
-            {
-                "target": "hmpf",
-                "datapoints": [
-                    [
-                        5,
-                        1471003020
-                    ],
-                    [
-                        19,
-                        1471003080
-                    ]
-                ]
-            }]
-        mock.register_uri('GET',
-                          self.graphite_url_mem.format("env", "vertical", "service", ""),
-                          text=json.dumps(mem))
-        mock.register_uri('GET',
-                          self.graphite_url_cpu.format("env", "vertical", "service", ""),
-                          text=json.dumps(cpu))
-
-        self.assertDictEqual({'max_cpu': 19, 'max_mem': 130},
-                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
-                                                            'service', 'vertical', 'env', None))
-
-    def test_get_peak_resource_usage_with_color(self, request_mock):
-        mem = [
-            {
-                "target": "blubb",
-                "datapoints": [
-                    [
-                        130 * 1024 * 1024,
-                        1471003020
-                    ],
-                    [
-                        100,
-                        1471003080
-                    ]
-                ]
-            }]
-        cpu = [
-            {
-                "target": "hmpf",
-                "datapoints": [
-                    [
-                        5,
-                        1471003020
-                    ],
-                    [
-                        19,
-                        1471003080
-                    ]
-                ]
-            }]
-        request_mock.register_uri('GET',
-                                  self.graphite_url_mem.format("env", "vertical", "service", "-color"),
-                                  text=json.dumps(mem))
-        request_mock.register_uri('GET',
-                                  self.graphite_url_cpu.format("env", "vertical", "service", "-color"),
-                                  text=json.dumps(cpu))
-
-        self.assertDictEqual({'max_cpu': 19, 'max_mem': 130},
-                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
-                                                            'service', 'vertical', 'env', 'color'))
-
-    def test_get_peak_resource_usage_None_Values(self, request_mock):
-        mem = [
-            {
-                "target": "blubb",
-                "datapoints": [
-                    [
-                        130 * 1024 * 1024,
-                        1471003020
-                    ],
-                    [
-                        None,
-                        1471003080
-                    ],
-                    [
-                        100,
-                        1471003080
-                    ]
-                ]
-            }]
-        cpu = [
-            {
-                "target": "hmpf",
-                "datapoints": [
-                    [
-                        None,
-                        1471003020
-                    ],
-                    [
-                        None,
-                        1471003080
-                    ]
-                ]
-            }]
-        request_mock.register_uri('GET',
-                                  self.graphite_url_mem.format("env", "vertical", "service", ""),
-                                  text=json.dumps(mem))
-        request_mock.register_uri('GET',
-                                  self.graphite_url_cpu.format("env", "vertical", "service", ""),
-                                  text=json.dumps(cpu))
-
-        self.assertDictEqual({'max_cpu': 0, 'max_mem': 130},
-                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
-                                                            'service', 'vertical', 'env', None))
-
-    def test_get_peak_resource_usage_500(self, request_mock):
-        request_mock.register_uri('GET',
-                                  self.graphite_url_mem.format("env", "vertical", "service", ""),
-                                  text="some html", status_code=500)
-        request_mock.register_uri('GET',
-                                  self.graphite_url_cpu.format("env", "vertical", "service", ""),
-                                  text="some html", status_code=500)
-
-        self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
-                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
-                                                            'service', 'vertical', 'env', None))
-
-    @mock.patch('requests.get', side_effect=requests.exceptions.Timeout)
-    def test_get_peak_resource_usage_graphite_not_available(self, *_):
-        self.assertDictEqual({'max_cpu': 0, 'max_mem': 0},
-                             update.get_peak_resource_usage(self.graphite_url_cpu, self.graphite_url_mem,
-                                                            'service', 'vertical', 'env', None))
 
     def test_calculate_severity(self, _):
         self.assertEquals(1, update.calculate_severity({'status': 1, 'group': 'develop'}))

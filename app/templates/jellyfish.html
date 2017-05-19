@@ -84,8 +84,6 @@
                                 <div>Vertical usage total:
                                     <span class="label label-info">CPU: {{ vertical_ressources[vertical].cpu | round(2) }}</span>
                                     <span class="label label-info">MEM: {{ '{0:,}'.format(vertical_ressources[vertical].mem | round(2) ) }}</span>
-                                    <span class="label label-unflashy">CPU MAX: {{ vertical_ressources[vertical].max_cpu | round(2) }}</span>
-                                    <span class="label label-unflashy">MEM MAX: {{ '{0:,}'.format( vertical_ressources[vertical].max_mem | round(2) ) }}</span>
                                     <span class="label label-unflashy">max values are 99p over the last 14 days</span>
                                 </div>
                             {%- endif %}
@@ -103,18 +101,10 @@
                                         <td class="service_info_width">
                                             <div>{{ service_name }}</div>
                                             <div class="small">
-                                                <div><span
-                                                        class="label label-unflashy">CPU: {{ app_ressources[vertical][service_name].cpu }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="label label-unflashy">CPU MAX: {{ '{0:,}'.format(app_ressources[vertical][service_name].max_cpu | round(2)) }}</span>
-                                                </div>
-                                                <div><span
-                                                        class="label label-unflashy">MEM: {{ '{0:,}'.format(app_ressources[vertical][service_name].mem) }}</span>
-                                                </div>
-                                                <div>
-                                                    <span class="label label-unflashy">MEM MAX: {{ '{0:,}'.format(app_ressources[vertical][service_name].max_mem | round(2)) }}</span>
-                                                </div>
+                                                <div class="label label-unflashy">
+                                                    CPU: {{ app_ressources[vertical][service_name].cpu }}</div>
+                                                <div class="label label-unflashy">
+                                                    MEM: {{ '{0:,}'.format(app_ressources[vertical][service_name].mem) }}</div>
                                             </div>
                                         </td>
                                         {#                                        {%- for group_name, groups in state[vertical][service_name].items() %}#}

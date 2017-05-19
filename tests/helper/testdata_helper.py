@@ -4,7 +4,7 @@ def get_task(id="/group/vertical/name", group="group", vertical="vertical", name
              status=0, app_status=0,
              instances=1, healthy=1, unhealthy=0,
              color="GRN", active_color="GRN",
-             max_cpu=1, max_mem=1024, origin='some-marathon.com',
+             origin='some-marathon.com',
              status_page_status_code=200,
              jobs=None, marathon=None,
              marathon_link='http://some-marathon.com/ui/#/apps/%2Fgroup%2Fvertical%2Fname',
@@ -44,8 +44,6 @@ def get_task(id="/group/vertical/name", group="group", vertical="vertical", name
                                                            "cpu": 1,
                                                            "mem": 1024,
                                                            "marathon_link": marathon_link,
-                                                           "max_cpu": max_cpu,
-                                                           "max_mem": max_mem,
                                                            "labels": {} if not type else {"type": type}}}
 
 
