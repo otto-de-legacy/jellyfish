@@ -97,12 +97,15 @@ def transform_to_display_data(apps):
 
 
 def list_services_by_severity(transformed_data):
-    severity_list = {}
+    sorted_services = dict()
     for vertical, services in transformed_data.items():
-        severity_list[vertical] = sorted(services,
-                                         key=lambda service_name: sum_severity_per_service(services[service_name]),
-                                         reverse=True)
-    return severity_list
+        sorted_services[vertical] = sorted(services.keys())
+    for vertical, services in sorted_services.items():
+        sorted_services[vertical] = sorted(services,
+                                           key=lambda service_name:
+                                           sum_severity_per_service(transformed_data[vertical][service_name]),
+                                           reverse=True)
+    return sorted_services
 
 
 def sum_severity_per_service(service):

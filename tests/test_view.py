@@ -172,7 +172,9 @@ class TestView(unittest.TestCase):
         transformed_data = {
             'all': {
                 'mammal-dog': {
-                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='dog', vertical='mammal')}},
+                    'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='dog', vertical='mammal')}},
+                'mammal-cat': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='cat', vertical='mammal')}},
                 'fish-salmon':
                     {'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='salmon', vertical='fish'),
                                'BLU': testdata_helper.get_task(status=1, severity=1, name='tuna', vertical='fish')}}},
@@ -180,15 +182,39 @@ class TestView(unittest.TestCase):
                 'dog': {
                     'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='dog', vertical='mammal')}},
                 'cat': {
-                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='cat', vertical='mammal')}}},
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='cat', vertical='mammal')}},
+            },
             'fish': {
                 'salmon': {
                     'group': {'GRN': testdata_helper.get_task(status=1, severity=1, name='salmon', vertical='fish'),
                               'BLU': testdata_helper.get_task(status=1, severity=1, name='tuna', vertical='fish')}}}}
         expected = {
-            'all': ['mammal-dog', 'fish-salmon'],
+            'all': ['mammal-cat', 'fish-salmon', 'mammal-dog'],
             'mammal': ['cat', 'dog'],
             'fish': ['salmon']}
+        self.assertEquals(expected, views.list_services_by_severity(transformed_data))
+
+    def test_list_service_by_severity_keep_sorting_if_equal_severity_level(self):
+        transformed_data = {
+            'mammal': {
+                'dog': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(status=3, severity=3, name='dog', vertical='mammal')}},
+                'cat': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(status=3, severity=3, name='cat', vertical='mammal')}},
+                'alligator': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(status=1, severity=1, name='alligator', vertical='mammal')}}
+            },
+            'fish': {
+                'salmon': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='salmon', vertical='fish')}},
+                'tuna': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, severity=3, name='tuna', vertical='fish')}}}}
+        expected = {
+            'mammal': ['cat', 'dog', 'alligator'],
+            'fish': ['salmon', 'tuna']}
         self.assertEquals(expected, views.list_services_by_severity(transformed_data))
 
     def test_get_tabs(self):
