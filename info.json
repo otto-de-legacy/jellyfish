@@ -3,9 +3,9 @@
   "team": "unknown",
   "group": "tools",
   "description": "Service to monitor the health and status of applications running in Marathon",
-  "version": "unknown",
-  "commit": "unknown",
-  "vcs_link": "no-link",
+  "version": "local",
+  "commit": "HEAD",
+  "vcs_link": "https://github.com/otto-de/jellyfish/commit/",
   "contact_technical": "unknown",
   "contact_business": "unknown"
 }
