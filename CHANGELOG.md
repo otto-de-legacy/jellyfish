@@ -3,9 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD)
+## [Unreleased](https://github.com/otto-de/jellyfish/compare/1.0.1...HEAD)
 
-## [1.0.0](https://github.com/otto-de/jellyfish/compare/1.0.0...HEAD) - 2017-05-19
+## [1.0.1](https://github.com/otto-de/jellyfish/compare/1.0.1...1.0.0) - 2017-05-30
+### Fix
+- Service order is stable (lexical order), even if severity ratings are equal.
+
+## [1.0.0](https://github.com/otto-de/jellyfish/compare/1.0.0...0.15.1) - 2017-05-19
 ### Removed
 - resource view feature was removed.
 
