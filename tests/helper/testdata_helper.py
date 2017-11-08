@@ -110,3 +110,41 @@ def get_status(status="OK"):
             "team": "unknown"
         }
     }
+
+
+def describe_environments():
+    return {'Environments': [
+        {'ApplicationName': 'mammal-cat',
+         'EnvironmentName': 'mammal-cat-develop',
+         'Health': 'Green',
+         'HealthStatus': 'Ok',
+         'Status': 'Ready',
+         'VersionLabel': 'someVersion1234'},
+        {'ApplicationName': 'mammal-dog',
+         'EnvironmentName': 'mammal-dog-develop',
+         'Health': 'Grey',
+         'HealthStatus': 'Unknown',
+         'VersionLabel': 'someVersion5678'},
+
+    ],
+        'ResponseMetadata': {}}
+
+
+def get_environment_health():
+    return {'ApplicationMetrics': {'RequestCount': 0},
+            'Causes': [],
+            'Color': 'Green',
+            'EnvironmentName': 'mammal-dog',
+            'HealthStatus': 'Ok',
+            'InstancesHealth': {'Degraded': 0,
+                                'Info': 0,
+                                'NoData': 0,
+                                'Ok': 1,
+                                'Pending': 0,
+                                'Severe': 0,
+                                'Unknown': 0,
+                                'Warning': 0},
+            'RefreshedAt': 'someTime',
+            'ResponseMetadata': {},
+            'Status': 'Ready'}
+

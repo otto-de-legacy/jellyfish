@@ -23,6 +23,13 @@ def update_aws(thread_id, service, interval, greedy=False):
               args=(thread_id, service, interval)).start()
 
 
+def get_beanstalk_client(access_key, secret_key):
+    return boto3.client(
+        'elasticbeanstalk',
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret_key)
+
+
 def get_beanstalk_environments(service):
     return {}
 
