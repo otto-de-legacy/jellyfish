@@ -12,15 +12,15 @@ from app.modules import util
 logger = logging.getLogger(__name__)
 
 
-def update_service(thread_id, service_list, interval, greedy=False):
+def update_standalone(thread_id, service_list, interval, greedy=False):
     for service in service_list:
         config.rdb.sadd("all-services", service["id"])
         config.rdb.set(service["id"], json.dumps(get_service_info(service)))
-    config.rdb.set("single_services", pickle.dumps(Delorean.now()))
+    config.rdb.set("standalone_services", pickle.dumps(Delorean.now()))
     if not greedy:
         logger.debug("Finish update for services")
         Timer(interval=interval,
-              function=update_service,
+              function=update_standalone,
               args=(thread_id, service_list, interval)).start()
 
 

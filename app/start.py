@@ -68,11 +68,10 @@ def start_tasks(config_file, greedy_mode):
                                          'url': service['url'].replace('{environment}', env['name'])})
             else:
                 service_list.append({'id': service['id'], 'url': service['url']})
-        start_thread_timer("single_services", standalone.update_service, service_list, greedy_mode)
+        start_thread_timer("standalone_services", standalone.update_standalone, service_list, greedy_mode)
     if 'aws' in config_file:
-        print(config_file)
         for service in config_file['aws']:
-            start_thread_timer("single_services", aws.update_aws, service, greedy_mode)
+            start_thread_timer(service['id'], aws.update_aws, service, greedy_mode)
 
 
 def start_thread_timer(thread_name, func, cfg, greedy_mode):

@@ -10,11 +10,9 @@ from app.modules import util
 from app import config
 from tests.helper import testdata_helper
 
-unittest.util._MAX_LENGTH = 1000
-
 
 @requests_mock.Mocker()
-class TestView(unittest.TestCase):
+class TestStandalone(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.maxDiff = None
@@ -31,7 +29,7 @@ class TestView(unittest.TestCase):
         service_list = [{'url': 'Some url with dog-ci', 'id': '/dog-ci/vertical/service'},
                         {'url': 'Some url with cat', 'id': '/cat/vertical/service'}]
 
-        standalone.update_service('1234', service_list, 0, greedy=True)
+        standalone.update_standalone('1234', service_list, 0, greedy=True)
         self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/dog-ci/vertical/service').decode()))
         self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/cat/vertical/service').decode()))
         self.assertEqual({b'/dog-ci/vertical/service', b'/cat/vertical/service'}, config.rdb.smembers('all-services'))

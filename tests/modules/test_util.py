@@ -2,59 +2,19 @@
 import json
 import unittest
 
-import redislite
 import requests
 import requests_mock
 from mock import MagicMock
 
 from app.modules import util
-from app import config
 from tests.helper import testdata_helper
-
-unittest.util._MAX_LENGTH = 1000
 
 
 @requests_mock.Mocker()
-class TestView(unittest.TestCase):
+class TestUtil(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.maxDiff = None
-        config.rdb = redislite.Redis('redis.db')
-        cls.marathon = {"protocol": "http",
-                        "host": "some-marathon.com",
-                        "apps": "/v2/apps",
-                        "username": "username",
-                        "password": "password",
-                        "blacklist": [".*marathon-healthcheck"],
-                        "root_app_lable": "ROOT_APP",
-                        "status_path_lable": "STATUS_PATH",
-                        "base_domain": "some-domain.com"}
-        cls.app = {"id": "/group/vertical/name",
-                   "env": {"STATUS_PATH": "/service/internal/status"},
-                   "instances": 1,
-                   "cpus": 1,
-                   "mem": 1024,
-                   "version": "2016-05-26T07:15:05.585Z",
-                   "versionInfo": {"lastScalingAt": "2016-05-26T07:15:05.585Z",
-                                   "lastConfigChangeAt": "2016-05-26T07:15:05.585Z"},
-                   "tasksStaged": 0,
-                   "tasksRunning": 1,
-                   "tasksHealthy": 1,
-                   "tasksUnhealthy": 0,
-                   "deployments": [],
-                   "labels": {}}
-        cls.app_server_service = {"id": "/group/vertical/name",
-                                  "url": "http://some-domain.com/service/internal/status"}
-        cls.marathon_apps = {"apps": [cls.app,
-                                      {"id": "/develop/mesos/marathon-healthcheck",
-                                       "instances": 2,
-                                       "cpus": 0.01,
-                                       "mem": 4}]}
-        cls.marathon_apps_json = json.dumps(cls.marathon_apps)
-
-    def setUp(self):
-        config.rdb.flushall()
-        config.rdb.flushdb()
 
     def test_itemize_app_id(self, _):
         group, vertical, subgroup, name, color = util.itemize_app_id("/group/vertical/name")

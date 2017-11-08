@@ -8,8 +8,6 @@ from app import config
 from app import views
 from tests.helper import testdata_helper
 
-unittest.util._MAX_LENGTH = 1000
-
 
 class TestView(unittest.TestCase):
     @classmethod

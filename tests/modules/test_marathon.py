@@ -12,11 +12,9 @@ from app.modules import marathon
 from app import config
 from tests.helper import testdata_helper
 
-unittest.util._MAX_LENGTH = 1000
-
 
 @requests_mock.Mocker()
-class TestView(unittest.TestCase):
+class TestMarathon(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.maxDiff = None

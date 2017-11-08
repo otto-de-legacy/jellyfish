@@ -3,10 +3,8 @@ import unittest
 
 from app import util
 
-unittest.util._MAX_LENGTH = 1000
 
-
-class TestView(unittest.TestCase):
+class TestUtil(unittest.TestCase):
     def test_get_in_dict(self):
         d = {"a": {"b": "value"}}
         self.assertEquals(d["a"], util.get_in_dict(["a"], d))

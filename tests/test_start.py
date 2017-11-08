@@ -6,10 +6,8 @@ import redislite
 from app import config
 from app import start
 
-unittest.util._MAX_LENGTH = 1000
 
-
-class TestView(unittest.TestCase):
+class TestStart(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.maxDiff = None
@@ -66,7 +64,7 @@ class TestView(unittest.TestCase):
              'protocol': 'http'},
             mock.call_args_list[0][0][2])
 
-        self.assertEqual("update_service", mock.call_args_list[1][0][1].__name__)
+        self.assertEqual("update_standalone", mock.call_args_list[1][0][1].__name__)
         self.assertEqual([
             {'url': 'Some url with dog-ci', 'id': '/dog-ci/vertical/service'},
             {'url': 'Some url with cat', 'id': '/cat/vertical/service'}

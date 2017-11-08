@@ -15,3 +15,10 @@ marathons:
 services:
   - id: /{environment}/group/service
     url: http://group.{environment}.some-domain/service/internal/status
+aws:
+  - id: /develop/dog
+    access_key: AAAA
+    secret_key: 1234
+  - id: /live/cat
+    access_key: BBBB
+    secret_key: 5678

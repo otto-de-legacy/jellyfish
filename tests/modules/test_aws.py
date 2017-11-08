@@ -4,15 +4,11 @@ import unittest
 from unittest import mock
 
 import redislite
-import requests_mock
-
 from app.modules import aws
 from app import config
 
-unittest.util._MAX_LENGTH = 1000
 
-
-class TestView(unittest.TestCase):
+class TestAws(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.maxDiff = None
@@ -37,4 +33,8 @@ class TestView(unittest.TestCase):
 
     @mock.patch('app.modules.aws.get_beanstalk_health', return_value={'info': 'data'})
     def test_get_beanstalk_environments(self, *_):
+        pass
+
+    @mock.patch('app.modules.aws.get_beanstalk_health', return_value={'info': 'data'})
+    def test_get_beanstalk_health(self, *_):
         pass
