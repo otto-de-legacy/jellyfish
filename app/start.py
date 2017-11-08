@@ -9,7 +9,10 @@ from delorean import Delorean
 from eliza.config import ConfigLoader
 from flask import Flask
 
-from app import config, status, styleguide, update, views, view_util
+from app import config, status, styleguide, views, view_util
+from app.modules import aws
+from app.modules import marathon
+from app.modules import standalone
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +58,7 @@ def generate_id():
 def start_tasks(config_file, greedy_mode):
     if 'marathons' in config_file:
         for marathon_cfg in config_file['marathons']:
-            start_thread_timer(marathon_cfg['host'], update.update_marathon, marathon_cfg, greedy_mode)
+            start_thread_timer(marathon_cfg['host'], marathon.update_marathon, marathon_cfg, greedy_mode)
     if 'services' in config_file:
         service_list = list()
         for service in config_file['services']:
@@ -65,11 +68,11 @@ def start_tasks(config_file, greedy_mode):
                                          'url': service['url'].replace('{environment}', env['name'])})
             else:
                 service_list.append({'id': service['id'], 'url': service['url']})
-        start_thread_timer("single_services", update.update_service, service_list, greedy_mode)
+        start_thread_timer("single_services", standalone.update_service, service_list, greedy_mode)
     if 'aws' in config_file:
         print(config_file)
         for service in config_file['aws']:
-            start_thread_timer("single_services", update.update_aws, service, greedy_mode)
+            start_thread_timer("single_services", aws.update_aws, service, greedy_mode)
 
 
 def start_thread_timer(thread_name, func, cfg, greedy_mode):

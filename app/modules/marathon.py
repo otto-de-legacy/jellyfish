@@ -1,16 +1,16 @@
-# -*- coding: utf-8 -*-
 import json
 import pickle
 import re
-from pprint import pprint
 from threading import Timer
 from urllib.parse import quote_plus
+from flask import logging
 
 import requests
 from delorean import Delorean
-from flask import logging
 
 from app import config
+from app.util import get_in_dict
+from app.modules import util
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def update_marathon(thread_id, cfg, interval, greedy=False):
     tasks = list()
     for app in app_list:
         try:
-            _, _, _, app_name, _ = itemize_app_id(app["id"])
+            _, _, _, app_name, _ = util.itemize_app_id(app["id"])
             if not re.match(blacklist, app["id"]):
                 config.rdb.sadd("all-services", app["id"])
                 config.rdb.set(app["id"], json.dumps(get_task_info(app, cfg)))
@@ -40,32 +40,9 @@ def update_marathon(thread_id, cfg, interval, greedy=False):
     config.rdb.set(cfg['host'], pickle.dumps(Delorean.now()))
     if not greedy:
         logger.debug("Finish update for " + cfg['host'])
-        Timer(interval=interval, function=update_marathon,
+        Timer(interval=interval,
+              function=update_marathon,
               args=(thread_id, cfg, interval)).start()
-
-
-def update_service(thread_id, service_list, interval, greedy=False):
-    for service in service_list:
-        config.rdb.sadd("all-services", service["id"])
-        config.rdb.set(service["id"], json.dumps(get_service_info(service)))
-    config.rdb.set("single_services", pickle.dumps(Delorean.now()))
-    if not greedy:
-        logger.debug("Finish update for services")
-        Timer(interval=interval, function=update_service,
-              args=(thread_id, service_list, interval)).start()
-
-
-def update_aws(thread_id, service, interval, greedy=False):
-    application_environment_mapping = get_beanstalk_environments(service)
-    for application, environment in application_environment_mapping.items():
-        health = get_beanstalk_health(environment)
-        app_id = service["id"] + '/' + application
-        config.rdb.set(app_id, json.dumps(health))
-        config.rdb.sadd("all-services", app_id)
-    if not greedy:
-        logger.debug("Finish update for aws")
-        Timer(interval=interval, function=update_service,
-              args=(thread_id, service, interval)).start()
 
 
 def get_apps(marathon):
@@ -102,7 +79,7 @@ def get_apps(marathon):
 def get_task_info(app, cfg):
     task = dict()
     task["id"] = app["id"]
-    task["group"], task["vertical"], task["subgroup"], task["name"], task["color"] = itemize_app_id(app["id"])
+    task["group"], task["vertical"], task["subgroup"], task["name"], task["color"] = util.itemize_app_id(app["id"])
     task["full-name"] = "-".join([task["vertical"], task["name"]])
 
     task["marathon"] = dict()
@@ -128,56 +105,27 @@ def get_task_info(app, cfg):
                                         root_app, cfg)
 
     if status_path and task["marathon"]["instances"] > 0:
-        status_page_data, active_color, status_page_code = get_application_status(task["status_url"], cfg)
+        status_page_data, active_color, status_page_code = util.get_application_status(task["status_url"], cfg)
         if task["color"] and active_color and task["color"] != active_color:
             task["status_url"] = task["status_url"].replace('http://', 'http://staged.')
-            status_page_data, _, status_page_code = get_application_status(task["status_url"], cfg)
+            status_page_data, _, status_page_code = util.get_application_status(task["status_url"], cfg)
         task["version"] = get_in_dict(["application", "version"], status_page_data, "UNKNOWN")
         task["status_page_status_code"] = status_page_code
         task["active_color"] = active_color
-        task["app_status"] = status_level(get_in_dict(["application", "status"], status_page_data, "UNKNOWN"))
+        task["app_status"] = util.status_level(get_in_dict(["application", "status"], status_page_data, "UNKNOWN"))
         task["jobs"] = dict()
         for job, job_info in get_in_dict(["application", "statusDetails"], status_page_data, {}).items():
-            task["jobs"][job] = get_job_info(job_info)
+            task["jobs"][job] = util.get_job_info(job_info)
     else:
         task["version"] = "UNKNOWN"
         task["active_color"] = None
         task["status_page_status_code"] = None
-        task["app_status"] = status_level("UNKNOWN")
+        task["app_status"] = util.status_level("UNKNOWN")
         task["jobs"] = dict()
 
     task["status"] = overall_status(task)
-    task["severity"] = calculate_severity(task)
+    task["severity"] = util.calculate_severity(task)
     return task
-
-
-def get_service_info(service):
-    task = dict()
-    task["id"] = service["id"]
-    task["status_url"] = service["url"]
-    task["group"], task["vertical"], task["subgroup"], task["name"], task["color"] = itemize_app_id(service["id"])
-    task["full-name"] = "-".join([task["vertical"], task["name"]])
-
-    status_page_data, active_color, status_page_code = get_application_status(service["url"], service)
-    task["version"] = get_in_dict(["application", "version"], status_page_data, "UNKNOWN")
-    task["status_page_status_code"] = status_page_code
-    task["active_color"] = active_color
-    task["app_status"] = status_level(get_in_dict(["application", "status"], status_page_data, "UNKNOWN"))
-    task["jobs"] = dict()
-    for job, job_info in get_in_dict(["application", "statusDetails"], status_page_data, {}).items():
-        task["jobs"][job] = get_job_info(job_info)
-
-    task["status"] = task["app_status"]
-    task["severity"] = calculate_severity(task)
-    return task
-
-
-def get_beanstalk_environments(service):
-    return {}
-
-
-def get_beanstalk_health(service):
-    return {}
 
 
 def get_status_url(name, group, vertical, subgroup, base_domain, status_path, root_app, cfg):
@@ -193,89 +141,9 @@ def get_status_url(name, group, vertical, subgroup, base_domain, status_path, ro
         return ''
 
 
-def get_application_status(status_url, cfg):
-    status_code = None
-    try:
-        request_result = requests.get(status_url,
-                                      headers=cfg['headers'] if 'headers' in cfg else {},
-                                      cookies=cfg['cookies'] if 'cookies' in cfg else {},
-                                      verify=False,
-                                      timeout=5)
-        active_color = request_result.headers.get('x-color', None)
-        status_code = request_result.status_code
-        status_page_data = json.loads(request_result.text)
-    except (ValueError, requests.exceptions.Timeout,
-            requests.exceptions.ConnectionError) as error:
-        logger.warning(' '.join(["could not read status page:", status_url, "[", error.__class__.__name__, "]"]))
-        return {}, None, status_code
-    return status_page_data, active_color, status_code
-
-
-def get_in_list(index, list, default=None):
-    if len(list) > index:
-        return list[index]
-    else:
-        return default
-
-
-def get_in_dict(key_list, my_dict, default=None):
-    tmp = my_dict
-    for key in key_list:
-        if not isinstance(tmp, dict):
-            return default
-        tmp = tmp.get(key, default)
-    return tmp
-
-
-def itemize_app_id(app_id):
-    color_codes = ['BLU', 'GRN']
-    split = app_id.split("/")
-    group = split[1]
-    vertical = split[2]
-
-    if len(split) == 4 or len(split) == 5 and str.upper(split[-1]) in color_codes:
-        subgroup = ""
-        name = split[3]
-    else:
-        subgroup = split[3]
-        name = split[4]
-
-    if str.upper(split[-1]) in color_codes:
-        color = str.upper(split[-1])
-    else:
-        color = 'GRN'
-    return group, vertical, subgroup, name, color
-
-
-def calculate_severity(task):
-    return task["status"] * (10 if task["status"] == 3 else 1) * (100 if task['group'] == 'live' else 1)
-
-
 def overall_status(task):
     if task["marathon"]["healthy"] < task["marathon"]["instances"] or \
                     task["status_page_status_code"] and task["status_page_status_code"] > 500:
-        return status_level("ERROR")
+        return util.status_level("ERROR")
     else:
         return 1 if "app_status" not in task or task["app_status"] is None else task["app_status"]
-
-
-def get_job_info(job):
-    current_status = status_level(job["status"])
-    return {"status": current_status,
-            "message": job.get("message", ""),
-            "running": bool("running" in job and job["running"]),
-            "started": job.get("started", None),
-            "stopped": job.get("stopped", None)}
-
-
-def status_level(status):
-    level = 1
-    if status == "OK":
-        level = 0
-    if status == "UNKNOWN":
-        level = 1
-    if status == "WARNING":
-        level = 2
-    if status == "ERROR":
-        level = 3
-    return level

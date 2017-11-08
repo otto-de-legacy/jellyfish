@@ -6,7 +6,7 @@ from flask import request, url_for, jsonify, Blueprint, redirect
 
 from app import config
 from app import view_util
-from app.update import get_in_dict
+from app.util import get_in_dict
 
 logger = logging.getLogger('views')
 
