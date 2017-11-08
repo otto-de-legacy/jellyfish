@@ -23,7 +23,7 @@ class TestView(unittest.TestCase):
         mock = Mock(return_value=None)
         start.start_thread_timer = mock
 
-        config = {
+        config_file = {
             "environments": [
                 {
                     "name": "dog-ci",
@@ -48,10 +48,31 @@ class TestView(unittest.TestCase):
                     "id": "/{environment}/vertical/service",
                     "url": "Some url with {environment}"
                 }
+            ],
+            "aws": [
+                {
+                    "id": "/dog-ci/vertical",
+                    "access_key": "AAAA",
+                    "secret_key": "1234"
+                }
             ]
         }
 
-        start.start_tasks(config, True)
-        self.assertEqual(2, len(mock.call_args_list))
-        self.assertEqual({'apps': '/v2/apps', 'password': 'password', 'host': 'localhost:12345', 'username': 'username', 'protocol': 'http'}, mock.call_args_list[0][0][2])
-        self.assertEqual([{'url': 'Some url with dog-ci', 'id': '/dog-ci/vertical/service'}, {'url': 'Some url with cat', 'id': '/cat/vertical/service'}], mock.call_args_list[1][0][2])
+        start.start_tasks(config_file, True)
+        self.assertEqual(3, len(mock.call_args_list))
+        self.assertEqual("update_marathon", mock.call_args_list[0][0][1].__name__)
+        self.assertEqual(
+            {'apps': '/v2/apps', 'password': 'password', 'host': 'localhost:12345', 'username': 'username',
+             'protocol': 'http'},
+            mock.call_args_list[0][0][2])
+
+        self.assertEqual("update_service", mock.call_args_list[1][0][1].__name__)
+        self.assertEqual([
+            {'url': 'Some url with dog-ci', 'id': '/dog-ci/vertical/service'},
+            {'url': 'Some url with cat', 'id': '/cat/vertical/service'}
+        ],
+            mock.call_args_list[1][0][2])
+
+        self.assertEqual("update_aws", mock.call_args_list[2][0][1].__name__)
+        self.assertEqual({'id': '/dog-ci/vertical', 'access_key': 'AAAA', 'secret_key': '1234'},
+                         mock.call_args_list[2][0][2])

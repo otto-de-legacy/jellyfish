@@ -66,11 +66,15 @@ def start_tasks(config_file, greedy_mode):
             else:
                 service_list.append({'id': service['id'], 'url': service['url']})
         start_thread_timer("single_services", update.update_service, service_list, greedy_mode)
+    if 'aws' in config_file:
+        print(config_file)
+        for service in config_file['aws']:
+            start_thread_timer("single_services", update.update_aws, service, greedy_mode)
 
 
-def start_thread_timer(thread_name, function, cfg, greedy_mode):
+def start_thread_timer(thread_name, func, cfg, greedy_mode):
     thread_id = generate_id()
     config.rdb.lpush('thread-list', thread_name)
     config.rdb.set(thread_id + config.THREAD_SUFFIX, pickle.dumps(Delorean.now()))
-    Timer(interval=1, function=function,
+    Timer(interval=1, function=func,
           args=(thread_id, cfg, config.THREAD_UPDATE_INTERVAL, greedy_mode)).start()

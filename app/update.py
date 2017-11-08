@@ -55,6 +55,10 @@ def update_service(thread_id, service_list, interval, greedy=False):
               args=(thread_id, service_list, interval)).start()
 
 
+def update_aws(thread_id, services, interval, greedy=False):
+    pass
+
+
 def get_apps(marathon):
     marathon_url = ''.join([marathon['protocol'],
                             "://",
