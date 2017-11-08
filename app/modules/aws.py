@@ -30,8 +30,14 @@ def get_beanstalk_client(access_key, secret_key):
         aws_secret_access_key=secret_key)
 
 
-def get_beanstalk_environments(service):
-    return {}
+def get_beanstalk_environments(beanstalk_client):
+    data = dict()
+    response = beanstalk_client.describe_environments()
+    for env in response['Environments']:
+        application_name = env['ApplicationName']
+        environment_name = env['EnvironmentName']
+        data[application_name] = environment_name
+    return data
 
 
 def get_beanstalk_health(service):

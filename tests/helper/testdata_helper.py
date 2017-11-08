@@ -147,4 +147,3 @@ def get_environment_health():
             'RefreshedAt': 'someTime',
             'ResponseMetadata': {},
             'Status': 'Ready'}
-
