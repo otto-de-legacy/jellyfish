@@ -55,8 +55,17 @@ def update_service(thread_id, service_list, interval, greedy=False):
               args=(thread_id, service_list, interval)).start()
 
 
-def update_aws(thread_id, services, interval, greedy=False):
-    pass
+def update_aws(thread_id, service, interval, greedy=False):
+    application_environment_mapping = get_beanstalk_environments(service)
+    for application, environment in application_environment_mapping.items():
+        health = get_beanstalk_health(environment)
+        app_id = service["id"] + '/' + application
+        config.rdb.set(app_id, json.dumps(health))
+        config.rdb.sadd("all-services", app_id)
+    if not greedy:
+        logger.debug("Finish update for aws")
+        Timer(interval=interval, function=update_service,
+              args=(thread_id, service, interval)).start()
 
 
 def get_apps(marathon):
@@ -161,6 +170,14 @@ def get_service_info(service):
     task["status"] = task["app_status"]
     task["severity"] = calculate_severity(task)
     return task
+
+
+def get_beanstalk_environments(service):
+    return {}
+
+
+def get_beanstalk_health(service):
+    return {}
 
 
 def get_status_url(name, group, vertical, subgroup, base_domain, status_path, root_app, cfg):
