@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def update_aws(thread_id, service, interval, greedy=False):
-    beanstalk_client = get_beanstalk_client(service['access_key'], service['secret_key'])
+    beanstalk_client = get_beanstalk_client(service['region_name'], service['access_key'], service['secret_key'])
     application_environment_mapping = get_beanstalk_environments(beanstalk_client)
     for application, environment in application_environment_mapping.items():
         app_id = service["id"] + '/' + application
@@ -27,11 +27,12 @@ def update_aws(thread_id, service, interval, greedy=False):
               args=(thread_id, service, interval)).start()
 
 
-def get_beanstalk_client(access_key, secret_key):
+def get_beanstalk_client(region_name, access_key, secret_key):
     return boto3.client(
         'elasticbeanstalk',
         aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key)
+        aws_secret_access_key=secret_key,
+        region_name=region_name)
 
 
 def get_beanstalk_environments(beanstalk_client):
