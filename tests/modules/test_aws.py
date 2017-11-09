@@ -20,6 +20,7 @@ class TestAws(unittest.TestCase):
         config.rdb.flushall()
         config.rdb.flushdb()
 
+    @mock.patch('app.modules.aws.get_beanstalk_client', return_value={})
     @mock.patch('app.modules.aws.get_beanstalk_environments',
                 return_value={'mammal-dog': 'mammal-dog-develop',
                               'mammal-cat': 'mammal-cat-develop'})
@@ -40,4 +41,26 @@ class TestAws(unittest.TestCase):
                           'mammal-cat': 'mammal-cat-develop'}, aws.get_beanstalk_environments(beanstalk_client))
 
     def test_get_beanstalk_health(self, *_):
-        pass
+        beanstalk_client = MagicMock()
+        beanstalk_client.describe_environment_health = MagicMock(
+            return_value=testdata_helper.describe_environment_health())
+
+        expected = testdata_helper.get_task(status_url='',
+                                            version='UNKNOWN',
+                                            app_status=1,
+                                            status=3,
+                                            jobs={},
+                                            marathon={'cpu': 0,
+                                                      'instances': 2,
+                                                      'labels': {},
+                                                      'marathon_link': '',
+                                                      'mem': 0,
+                                                      'origin': 'aws',
+                                                      'running': 1,
+                                                      'healthy': 1,
+                                                      'staged': 0,
+                                                      'unhealthy': 1},
+                                            severity=30)
+        self.assertEqual(expected, aws.get_beanstalk_health(beanstalk_client,
+                                                            '/group/vertical/name',
+                                                            'vertical-name-develop'))

@@ -130,7 +130,7 @@ def describe_environments():
         'ResponseMetadata': {}}
 
 
-def get_environment_health():
+def describe_environment_health():
     return {'ApplicationMetrics': {'RequestCount': 0},
             'Causes': [],
             'Color': 'Green',
@@ -141,7 +141,7 @@ def get_environment_health():
                                 'NoData': 0,
                                 'Ok': 1,
                                 'Pending': 0,
-                                'Severe': 0,
+                                'Severe': 1,
                                 'Unknown': 0,
                                 'Warning': 0},
             'RefreshedAt': 'someTime',
