@@ -48,6 +48,25 @@ def style_guide():
             "status_age": "",
             "jobs": {"Job OK": {"status": 0}}
         }},
+        "1c) Beanstalk environment": {"GRN": {
+            "status": 0,
+            "app_status": 0,
+            "name": "9",
+            "status_page_status_code": 200,
+            "version": "UNKNOWN",
+            "status_age": "",
+            "jobs": {},
+            "marathon": {
+                "origin": "aws",
+                "marathon_link": "/",
+                "instances": 1,
+                "healthy": 1,
+                "staged": 0,
+                "unhealthy": 0,
+                "cpu": 0,
+                "mem": 1024
+            }
+        }},
         "2) Running jobs will indicated as glowing": {"GRN": {
             "status": 0,
             "app_status": 0,
@@ -181,24 +200,25 @@ def style_guide():
                 "mem": 1024
             }
         }},
-        "9) App is healthy but status page is not accessible (status code > 500. possible issue with cname/varnish)": {"GRN": {
-            "status": 3,
-            "app_status": 1,
-            "name": "9",
-            "status_page_status_code": 503,
-            "version": "UNKNOWN",
-            "status_age": "",
-            "jobs": {},
-            "marathon": {
-                "marathon_link": "/",
-                "instances": 1,
-                "healthy": 1,
-                "staged": 0,
-                "unhealthy": 0,
-                "cpu": 1,
-                "mem": 1024
-            }
-        }},
+        "9) App is healthy but status page is not accessible (status code > 500. possible issue with cname/varnish)": {
+            "GRN": {
+                "status": 3,
+                "app_status": 1,
+                "name": "9",
+                "status_page_status_code": 503,
+                "version": "UNKNOWN",
+                "status_age": "",
+                "jobs": {},
+                "marathon": {
+                    "marathon_link": "/",
+                    "instances": 1,
+                    "healthy": 1,
+                    "staged": 0,
+                    "unhealthy": 0,
+                    "cpu": 1,
+                    "mem": 1024
+                }
+            }}
     }
     return render("styleguide.html",
                   "Styleguide",

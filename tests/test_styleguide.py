@@ -23,8 +23,11 @@ class TestAcceptance(unittest.TestCase):
 
         response = app.get("/internal/style")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.style_guide_html.replace(' ', ''), response.data.decode().replace(' ', ''))
+        html = response.data.decode()
 
-        soup = BeautifulSoup(response.data.decode(), 'html.parser')
-        wells = soup.find_all("div", {"class": "well"})
-        self.assertEqual(11, len(wells))
+        expected = BeautifulSoup(response.data.decode(), 'html.parser')
+        subject = BeautifulSoup(html, 'html.parser')
+        self.assertEqual(expected, subject)
+
+        wells = expected.find_all("div", {"class": "well"})
+        self.assertEqual(12, len(wells))
