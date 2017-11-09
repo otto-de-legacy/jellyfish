@@ -27,10 +27,17 @@
 
     {% if app.marathon %}
     <div>
+        {% if app.marathon.origin == "aws" %}
+        <a style="text-decoration: none">
+            <img style="width:20px; margin-top: -5px;"
+                 src="{{ url_for('static', filename = 'img/beanstalk.png') }}">
+        </a>
+        {% else %}
         <a href="{{app.marathon.marathon_link}}" style="text-decoration: none">
             <img style="width:20px; margin-top: -5px;"
                  src="{{ url_for('static', filename = 'img/marathon.png') }}">
         </a>
+        {% endif %}
         {% if app.marathon.healthy < app.marathon.instances %}
         <big class="text-danger">{{app.marathon.healthy}}/{{app.marathon.instances}}</big>
         {% elif app.marathon.instances == 0 %}
