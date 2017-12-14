@@ -6,6 +6,7 @@ import boto3
 
 from app import config
 from app.modules import util
+from app.util import get_in_dict
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ def update_aws(thread_id, service, interval, greedy=False):
     for application, environment in application_environment_mapping.items():
         app_id = service["id"] + '/' + application
 
-        health = get_beanstalk_health(beanstalk_client, app_id, environment)
+        health = get_beanstalk_health(service, beanstalk_client, app_id, environment)
 
         config.rdb.set(app_id, json.dumps(health))
         config.rdb.sadd("all-services", app_id)
@@ -45,7 +46,7 @@ def get_beanstalk_environments(beanstalk_client):
     return data
 
 
-def get_beanstalk_health(beanstalk_client, app_id, environment_name):
+def get_beanstalk_health(service, beanstalk_client, app_id, environment_name):
     response = beanstalk_client.describe_environment_health(
         EnvironmentName=environment_name,
         AttributeNames=[
@@ -58,17 +59,16 @@ def get_beanstalk_health(beanstalk_client, app_id, environment_name):
 
     task = dict()
     task["id"] = app_id
-    task["status_url"] = ""
+    task[
+        "status_url"] = "https://" + name + "." + group + "." + vertical + "." + service[
+        'domain_suffix'] + "/" + vertical + "-" + name + "/internal/status"
     task["group"] = group
     task["vertical"] = vertical
     task["subgroup"] = ""
     task["name"] = name
     task["color"] = "GRN"
     task["full-name"] = task["vertical"] + "-" + task["name"]
-    task["version"] = "UNKNOWN"
-    task["status_page_status_code"] = 200
     task["active_color"] = "GRN"
-    task["jobs"] = dict()
 
     instances = 0
     for status in response['InstancesHealth']:
@@ -90,14 +90,30 @@ def get_beanstalk_health(beanstalk_client, app_id, environment_name):
     task["marathon"]["marathon_link"] = ""
     task["marathon"]["labels"] = {}
 
-    task["app_status"] = util.status_level("UNKNOWN")
+    task = get_service_info(task)
+
+    task["status"] = overall_status(task)
+    task["severity"] = util.calculate_severity(task)
+    return task
+
+
+def get_service_info(task):
+    status_page_data, active_color, status_page_code = util.get_application_status(task["status_url"], {})
+    task["version"] = get_in_dict(["application", "version"], status_page_data, "UNKNOWN")
+    task["status_page_status_code"] = status_page_code
+    task["app_status"] = util.status_level(get_in_dict(["application", "status"], status_page_data, "UNKNOWN"))
+    task["jobs"] = dict()
+    for job, job_info in get_in_dict(["application", "statusDetails"], status_page_data, {}).items():
+        task["jobs"][job] = util.get_job_info(job_info)
+
     task["status"] = overall_status(task)
     task["severity"] = util.calculate_severity(task)
     return task
 
 
 def overall_status(task):
-    if task["marathon"]["healthy"] < task["marathon"]["instances"]:
+    if task["marathon"]["healthy"] < task["marathon"]["instances"] or \
+                    task["status_page_status_code"] and task["status_page_status_code"] > 500:
         return util.status_level("ERROR")
     else:
-        return 0
+        return 1 if "app_status" not in task or task["app_status"] is None else task["app_status"]
