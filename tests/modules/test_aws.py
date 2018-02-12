@@ -26,7 +26,7 @@ class TestAws(unittest.TestCase):
                               'mammal-cat': 'mammal-cat-develop'})
     @mock.patch('app.modules.aws.get_beanstalk_health', return_value={'info': 'data'})
     def test_update_aws(self, *_):
-        service = {'id': '/dog-ci/vertical', 'access_key': 'AAAA', 'secret_key': '1234'}
+        service = {'id': '/dog-ci/vertical', 'access_key': 'AAAA', 'secret_key': '1234', 'region_name': 'some-region'}
 
         aws.update_aws('1234', service, 0, greedy=True)
         self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/dog-ci/vertical/mammal-dog').decode()))
@@ -40,12 +40,14 @@ class TestAws(unittest.TestCase):
         self.assertEqual({'mammal-dog': 'mammal-dog-develop',
                           'mammal-cat': 'mammal-cat-develop'}, aws.get_beanstalk_environments(beanstalk_client))
 
+    @mock.patch('app.modules.util.get_application_status', return_value=[{}, None, 200])
     def test_get_beanstalk_health(self, *_):
         beanstalk_client = MagicMock()
+        service = {'id': '/dog-ci/vertical', 'domain_suffix': 'somewhere.com'}
         beanstalk_client.describe_environment_health = MagicMock(
             return_value=testdata_helper.describe_environment_health())
 
-        expected = testdata_helper.get_task(status_url='',
+        expected = testdata_helper.get_task(status_url='https://name.group.vertical.somewhere.com/vertical-name/internal/status',
                                             version='UNKNOWN',
                                             app_status=1,
                                             status=3,
@@ -61,6 +63,7 @@ class TestAws(unittest.TestCase):
                                                       'staged': 0,
                                                       'unhealthy': 1},
                                             severity=30)
-        self.assertEqual(expected, aws.get_beanstalk_health(beanstalk_client,
+        self.assertEqual(expected, aws.get_beanstalk_health(service,
+                                                            beanstalk_client,
                                                             '/group/vertical/name',
                                                             'vertical-name-develop'))

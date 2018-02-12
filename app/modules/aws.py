@@ -54,7 +54,8 @@ def get_beanstalk_health(service, beanstalk_client, app_id, environment_name):
         ]
     )
 
-    group, vertical, _, _, _ = util.itemize_app_id(app_id)
+    group, _, _, _, _ = util.itemize_app_id(app_id)
+    vertical = environment_name.split('-')[0]
     name = environment_name.split('-')[1]
 
     task = dict()
