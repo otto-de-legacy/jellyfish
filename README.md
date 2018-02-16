@@ -7,6 +7,9 @@ Jellyfish will visit all configured marathons asynchronously, one thread for eve
 
 All individual configured services will be processed on one extra thread.
 
+If aws credentials are configured, jellyfish will ask AWS Beanstalk for all of its environments and will monitore them.
+Because Beanstalk does not necessarily follow the same naming conventions as marathon, you have to specify to which namespace the Beanstalk services belong (see configuration example).
+
 ## Status Level
 Jellyfish knows four status levels:
 
@@ -101,6 +104,10 @@ Example:
     services:
       - id: /develop/vertical/service
         url: http://some_url/status
+    aws:
+    - id: /develop/pete
+      access_key: AAAA
+      secret_key: 1234
 ````
 The *defaults* will be merged with the following configuration.
 
