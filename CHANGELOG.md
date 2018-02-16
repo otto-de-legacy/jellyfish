@@ -3,7 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased](https://github.com/otto-de/jellyfish/compare/1.0.1...HEAD)
+## [Unreleased](https://github.com/otto-de/jellyfish/compare/1.1.0...HEAD)
+
+## [1.1.0](https://github.com/otto-de/jellyfish/compare/1.0.1...1.1.0) - 2018-02-16
+### Add
+- Module to include AWS Beanstalk services.
+
+### Fix
+- Services with same name from different modules should not overwrite each other.
 
 ## [1.0.1](https://github.com/otto-de/jellyfish/compare/1.0.0...1.0.1) - 2017-05-30
 ### Fix
