@@ -15,7 +15,7 @@ def update_aws(thread_id, service, interval, greedy=False):
     beanstalk_client = get_beanstalk_client(service['region_name'], service['access_key'], service['secret_key'])
     application_environment_mapping = get_beanstalk_environments(beanstalk_client)
     for application, environment in application_environment_mapping.items():
-        app_id = service["id"] + '/' + application
+        app_id = "aws::" + service["id"] + '/' + application
 
         health = get_beanstalk_health(service, beanstalk_client, app_id, environment)
 
@@ -53,7 +53,6 @@ def get_beanstalk_health(service, beanstalk_client, app_id, environment_name):
             'Status', 'Color', 'Causes', 'ApplicationMetrics', 'InstancesHealth', 'All', 'HealthStatus', 'RefreshedAt'
         ]
     )
-
     group, _, _, _, _ = util.itemize_app_id(app_id)
     vertical = environment_name.split('-')[0]
     name = environment_name.split('-')[1]
@@ -61,14 +60,14 @@ def get_beanstalk_health(service, beanstalk_client, app_id, environment_name):
     task = dict()
     task["id"] = app_id
     task[
-        "status_url"] = "https://" + name + "." + group + "." + vertical + "." + service[
-        'domain_suffix'] + "/" + vertical + "-" + name + "/internal/status"
+        "status_url"] = "https://" + name + "." + group + "." + vertical + "." + \
+                        service['domain_suffix'] + "/" + vertical + "-" + name + "/internal/status"
     task["group"] = group
     task["vertical"] = vertical
     task["subgroup"] = ""
-    task["name"] = name
+    task["name"] = "aws::" + name
     task["color"] = "GRN"
-    task["full-name"] = task["vertical"] + "-" + task["name"]
+    task["full-name"] = "aws::" + task["vertical"] + "-" + name
     task["active_color"] = "GRN"
 
     instances = 0
@@ -114,7 +113,7 @@ def get_service_info(task):
 
 def overall_status(task):
     if task["marathon"]["healthy"] < task["marathon"]["instances"] or \
-                    task["status_page_status_code"] and task["status_page_status_code"] > 500:
+            task["status_page_status_code"] and task["status_page_status_code"] > 500:
         return util.status_level("ERROR")
     else:
         return 1 if "app_status" not in task or task["app_status"] is None else task["app_status"]

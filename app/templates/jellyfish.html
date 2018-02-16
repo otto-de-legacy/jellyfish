@@ -95,11 +95,13 @@
                                     {% endfor %}
                                 </th>
 
-
                                 {%- for service_name in services_by_severity[vertical] %}
+                                    {% set source = service_name.split('::')[0] %}
+                                    {% set name = service_name.split('::')[1] %}
                                     <tr>
                                         <td class="service_info_width">
-                                            <div>{{ service_name }}</div>
+                                            <div>{{ name }}</div>
+                                            <div class="label label-default">{{ source }}</div>
                                             <div class="small">
                                                 <div class="label label-unflashy">
                                                     CPU: {{ app_ressources[vertical][service_name].cpu }}</div>

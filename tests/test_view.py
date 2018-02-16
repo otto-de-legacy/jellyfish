@@ -151,11 +151,44 @@ class TestView(unittest.TestCase):
         test_apps = [testdata_helper.get_task(status=1, name='dog', vertical='mammal'),
                      testdata_helper.get_task(status=3, name='salmon', vertical='fish')]
         expected = {
-            'all': {'mammal-dog': {'group': {'GRN': testdata_helper.get_task(status=1, name='dog', vertical='mammal')}},
-                    'fish-salmon': {
-                        'group': {'GRN': testdata_helper.get_task(status=3, name='salmon', vertical='fish')}}},
-            'mammal': {'dog': {'group': {'GRN': testdata_helper.get_task(status=1, name='dog', vertical='mammal')}}},
-            'fish': {'salmon': {'group': {'GRN': testdata_helper.get_task(status=3, name='salmon', vertical='fish')}}}}
+            'all': {
+                'no_source::mammal-dog': {
+                    'group': {'GRN': testdata_helper.get_task(status=1, name='dog', vertical='mammal')}
+                },
+                'no_source::fish-salmon': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, name='salmon', vertical='fish')}}},
+            'mammal': {
+                'no_source::dog': {
+                    'group': {'GRN': testdata_helper.get_task(status=1, name='dog', vertical='mammal')}}},
+            'fish': {
+                'no_source::salmon': {
+                    'group': {'GRN': testdata_helper.get_task(status=3, name='salmon', vertical='fish')}}}
+        }
+        self.assertDictEqual(expected, views.transform_to_display_data(test_apps))
+
+    def test_transform_to_display_data_with_equal_services_from_different_source(self):
+        test_apps = [testdata_helper.get_task(source="domesticated", status=1, name='dog', vertical='mammal'),
+                     testdata_helper.get_task(source="wild", status=2, name='dog', vertical='mammal')]
+        expected = {
+            'all': {
+                'domesticated::mammal-dog': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(source="domesticated", status=1, name='dog', vertical='mammal')}
+                },
+                'wild::mammal-dog': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(source="wild", status=2, name='dog', vertical='mammal')}
+                }},
+            'mammal': {
+                'domesticated::dog': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(source="domesticated", status=1, name='dog',
+                                                        vertical='mammal')}},
+                'wild::dog': {
+                    'group': {
+                        'GRN': testdata_helper.get_task(source="wild", status=2, name='dog', vertical='mammal')}}},
+
+        }
         self.assertDictEqual(expected, views.transform_to_display_data(test_apps))
 
     def test_sum_severity_per_service(self):
@@ -230,18 +263,18 @@ class TestView(unittest.TestCase):
         expected_vertical = {'all': {'cpu': 5, 'mem': 5120},
                              'mammal': {'cpu': 3, 'mem': 3072},
                              'fish': {'cpu': 2, 'mem': 2048}}
-        expected_apps = {'all': {'mammal-dog': {'cpu': 2,
-                                                'mem': 2048},
-                                 'mammal-cat': {'cpu': 1,
-                                                'mem': 1024},
-                                 'fish-salmon': {'cpu': 2,
-                                                 'mem': 2048}},
-                         'mammal': {'dog': {'cpu': 2,
-                                            'mem': 2048},
-                                    'cat': {'cpu': 1,
-                                            'mem': 1024}},
-                         'fish': {'salmon': {'cpu': 2,
-                                             'mem': 2048}}}
+        expected_apps = {'all': {'no_source::mammal-dog': {'cpu': 2,
+                                                           'mem': 2048},
+                                 'no_source::mammal-cat': {'cpu': 1,
+                                                           'mem': 1024},
+                                 'no_source::fish-salmon': {'cpu': 2,
+                                                            'mem': 2048}},
+                         'mammal': {'no_source::dog': {'cpu': 2,
+                                                       'mem': 2048},
+                                    'no_source::cat': {'cpu': 1,
+                                                       'mem': 1024}},
+                         'fish': {'no_source::salmon': {'cpu': 2,
+                                                        'mem': 2048}}}
 
         vertical, apps = views.get_app_resource_allocation(test_apps)
         self.assertDictEqual(expected_vertical, vertical)

@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 
 def update_standalone(thread_id, service_list, interval, greedy=False):
     for service in service_list:
-        config.rdb.sadd("all-services", service["id"])
-        config.rdb.set(service["id"], json.dumps(get_service_info(service)))
+        service_id = "standalone::" + service["id"]
+        config.rdb.sadd("all-services", service_id)
+        config.rdb.set(service_id, json.dumps(get_service_info(service)))
     config.rdb.set("standalone_services", pickle.dumps(Delorean.now()))
     if not greedy:
         logger.debug("Finish update for services")
@@ -28,8 +29,11 @@ def get_service_info(service):
     task = dict()
     task["id"] = service["id"]
     task["status_url"] = service["url"]
-    task["group"], task["vertical"], task["subgroup"], task["name"], task["color"] = util.itemize_app_id(service["id"])
-    task["full-name"] = "-".join([task["vertical"], task["name"]])
+    task["group"], task["vertical"], task["subgroup"], name, task["color"] = util.itemize_app_id(service["id"])
+
+    task["name"] = "standalone::" + name
+    full_name = "-".join([task["vertical"], name])
+    task["full-name"] = "standalone::" + full_name
 
     status_page_data, active_color, status_page_code = util.get_application_status(service["url"], service)
     task["version"] = get_in_dict(["application", "version"], status_page_data, "UNKNOWN")

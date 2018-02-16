@@ -30,13 +30,13 @@ class TestStandalone(unittest.TestCase):
                         {'url': 'Some url with cat', 'id': '/cat/vertical/service'}]
 
         standalone.update_standalone('1234', service_list, 0, greedy=True)
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/dog-ci/vertical/service').decode()))
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/cat/vertical/service').decode()))
-        self.assertEqual({b'/dog-ci/vertical/service', b'/cat/vertical/service'}, config.rdb.smembers('all-services'))
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('standalone::/dog-ci/vertical/service').decode()))
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('standalone::/cat/vertical/service').decode()))
+        self.assertEqual({b'standalone::/dog-ci/vertical/service', b'standalone::/cat/vertical/service'}, config.rdb.smembers('all-services'))
 
     @mock.patch('app.modules.util.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
     def test_get_service_info(self, *_):
-        expected = testdata_helper.get_task(marathon=None, status_url="http://some-domain.com/service/internal/status")
+        expected = testdata_helper.get_task(marathon=None, source="standalone", status_url="http://some-domain.com/service/internal/status")
         del expected["marathon"]
         self.assertDictEqual(expected, standalone.get_service_info(self.app_server_service))
 

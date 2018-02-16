@@ -130,7 +130,7 @@ class TestMarathon(unittest.TestCase):
         request_mock.register_uri('GET', "http://name.vertical.group.some-domain.com/service/internal/status",
                                   text=json.dumps(status),
                                   headers={'x-color': 'GRN'})
-        expected = testdata_helper.get_task()
+        expected = testdata_helper.get_task(source="marathon")
         self.assertDictEqual(expected, marathon.get_task_info(self.app, self.marathon))
         self.assertEquals(1, len(request_mock.request_history))
         self.assertEquals("http://name.vertical.group.some-domain.com/service/internal/status",
@@ -148,10 +148,12 @@ class TestMarathon(unittest.TestCase):
 
         expected_inactive = testdata_helper.get_task(id="/group/vertical/name/GRN",
                                                      app_status=3, status=3, severity=30, active_color="BLU",
+                                                     source="marathon",
                                                      color="GRN",
                                                      status_url='http://staged.name.vertical.group.some-domain.com/service/internal/status',
                                                      marathon_link='http://some-marathon.com/ui/#/apps/%2Fgroup%2Fvertical%2Fname%2FGRN')
         expected_active = testdata_helper.get_task(id="/group/vertical/name/BLU",
+                                                   source="marathon",
                                                    active_color="BLU", color="BLU",
                                                    status_url='http://name.vertical.group.some-domain.com/service/internal/status',
                                                    marathon_link='http://some-marathon.com/ui/#/apps/%2Fgroup%2Fvertical%2Fname%2FBLU')
@@ -173,17 +175,18 @@ class TestMarathon(unittest.TestCase):
 
     @mock.patch('app.modules.util.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
     def test_get_task_info(self, *_):
-        expected = testdata_helper.get_task()
+        expected = testdata_helper.get_task(source="marathon")
         self.assertDictEqual(expected, marathon.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.modules.util.get_application_status', return_value=[testdata_helper.get_status(), "GRN", 200])
     def test_get_task_info_job_does_not_change(self, *_):
-        expected = testdata_helper.get_task()
+        expected = testdata_helper.get_task(source="marathon")
         self.assertDictEqual(expected, marathon.get_task_info(self.app, self.marathon))
 
     @mock.patch('app.modules.util.get_application_status', return_value=[{}, None, 404])
     def test_get_task_info_status_page_not_available(self, *_):
         expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            source="marathon",
                                             status_page_status_code=404,
                                             version="UNKNOWN",
                                             active_color=None, jobs={})
@@ -192,6 +195,7 @@ class TestMarathon(unittest.TestCase):
     @mock.patch('app.modules.util.get_application_status', return_value=[{}, None, 503])
     def test_get_task_info_status_page_503(self, *_):
         expected = testdata_helper.get_task(status=3, app_status=1, severity=30,
+                                            source="marathon",
                                             status_page_status_code=503,
                                             version="UNKNOWN",
                                             active_color=None, jobs={})
@@ -201,6 +205,7 @@ class TestMarathon(unittest.TestCase):
     @mock.patch('app.modules.util.get_application_status', return_value=[{}, None, 503])
     def test_get_task_info_status_page_503_in_live(self, *_):
         expected = testdata_helper.get_task(id='/live/vertical/name',
+                                            source="marathon",
                                             group='live',
                                             status_url='http://name.vertical.live.some-domain.com/service/internal/status',
                                             marathon_link='http://some-marathon.com/ui/#/apps/%2Flive%2Fvertical%2Fname',
@@ -214,6 +219,7 @@ class TestMarathon(unittest.TestCase):
 
     def test_get_task_info_no_status_page(self, *_):
         expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            source="marathon",
                                             status_url='',
                                             status_page_status_code=None,
                                             version="UNKNOWN",
@@ -224,6 +230,7 @@ class TestMarathon(unittest.TestCase):
 
     def test_get_task_info_suspended(self, _):
         expected = testdata_helper.get_task(status=1, app_status=1, severity=1,
+                                            source="marathon",
                                             status_page_status_code=None,
                                             version="UNKNOWN",
                                             active_color=None, jobs={},
@@ -248,17 +255,17 @@ class TestMarathon(unittest.TestCase):
                 return_value={'info': 'data'})
     def test_update_marathon(self, *_):
         # set previous
-        config.rdb.set('1234', ','.join(['/develop/dog/cat', '/develop/car/plane']))
-        config.rdb.set('/develop/car/plane', 'delete me')
-        config.rdb.sadd('all-services', '/develop/dog/cat', '/develop/car/plane')
+        config.rdb.set('1234', ','.join(['marathon::/develop/dog/cat', 'marathon::/develop/car/plane']))
+        config.rdb.set('marathon::/develop/car/plane', 'delete me')
+        config.rdb.sadd('all-services', 'marathon::/develop/dog/cat', 'marathon::/develop/car/plane')
 
         marathon.update_marathon(thread_id='1234', cfg=self.marathon, interval=1, greedy=True)
 
-        self.assertEqual('/develop/dog/cat,/develop/banana/pyjama', config.rdb.get('1234').decode())
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/develop/dog/cat').decode()))
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/develop/banana/pyjama').decode()))
-        self.assertEqual(None, config.rdb.get('/develop/car/plane'))
-        self.assertEqual({b'/develop/dog/cat', b'/develop/banana/pyjama'}, config.rdb.smembers('all-services'))
+        self.assertEqual('marathon::/develop/dog/cat,marathon::/develop/banana/pyjama', config.rdb.get('1234').decode())
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('marathon::/develop/dog/cat').decode()))
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('marathon::/develop/banana/pyjama').decode()))
+        self.assertEqual(None, config.rdb.get('marathon::/develop/car/plane'))
+        self.assertEqual({b'marathon::/develop/dog/cat', b'marathon::/develop/banana/pyjama'}, config.rdb.smembers('all-services'))
 
     @mock.patch('app.modules.marathon.get_apps',
                 return_value=[{'id': '/develop/mesos/some-marathon-healthcheck'},
@@ -268,14 +275,14 @@ class TestMarathon(unittest.TestCase):
                 return_value={'info': 'data'})
     def test_update_marathon_no_previous_tasks(self, *_):
         # no previous
-        config.rdb.set('/develop/car/plane', 'delete me')
-        config.rdb.sadd('all-services', '/develop/dog/cat', '/develop/car/plane')
+        config.rdb.set('marathon::/develop/car/plane', 'delete me')
+        config.rdb.sadd('all-services', 'marathon::/develop/dog/cat', 'marathon::/develop/car/plane')
 
         marathon.update_marathon(thread_id='1234', cfg=self.marathon, interval=1, greedy=True)
 
-        self.assertEqual('/develop/dog/cat,/develop/banana/pyjama', config.rdb.get('1234').decode())
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/develop/dog/cat').decode()))
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/develop/banana/pyjama').decode()))
-        self.assertEqual(b'delete me', config.rdb.get('/develop/car/plane'))
-        self.assertEqual({b'/develop/car/plane', b'/develop/dog/cat', b'/develop/banana/pyjama'},
+        self.assertEqual('marathon::/develop/dog/cat,marathon::/develop/banana/pyjama', config.rdb.get('1234').decode())
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('marathon::/develop/dog/cat').decode()))
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('marathon::/develop/banana/pyjama').decode()))
+        self.assertEqual(b'delete me', config.rdb.get('marathon::/develop/car/plane'))
+        self.assertEqual({b'marathon::/develop/car/plane', b'marathon::/develop/dog/cat', b'marathon::/develop/banana/pyjama'},
                          config.rdb.smembers('all-services'))

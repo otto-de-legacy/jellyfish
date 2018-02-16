@@ -57,7 +57,7 @@ def filter_state(app_list, name_filter, group_filter, type_filter, active_color_
         include_envs, exclude_envs = get_filter_lists(env_filter)
     filtered_list = list()
     for app in app_list:
-        if not name_filter or filter(app['name'], include=include_names, exclude=exclude_names):
+        if not name_filter or filter(app['name'].split('::')[1], include=include_names, exclude=exclude_names):
             if not env_filter or filter(app['group'], include=include_envs, exclude=exclude_envs):
                 if not group_filter or filter(app['vertical'], include=include_groups, exclude=exclude_groups):
                     if not type_filter or filter(get_in_dict(["marathon", "labels", "type"], app, ""),

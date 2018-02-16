@@ -24,9 +24,10 @@ def update_marathon(thread_id, cfg, interval, greedy=False):
         try:
             _, _, _, app_name, _ = util.itemize_app_id(app["id"])
             if not re.match(blacklist, app["id"]):
-                config.rdb.sadd("all-services", app["id"])
-                config.rdb.set(app["id"], json.dumps(get_task_info(app, cfg)))
-                tasks.append(app["id"])
+                app_id = "marathon::" + app["id"]
+                config.rdb.sadd("all-services", app_id)
+                config.rdb.set(app_id, json.dumps(get_task_info(app, cfg)))
+                tasks.append(app_id)
         except Exception as error:
             logger.error(
                 ' '.join([cfg['host'] + ":" + (app["id"] if app else "unkown"), "[",
@@ -79,8 +80,11 @@ def get_apps(marathon):
 def get_task_info(app, cfg):
     task = dict()
     task["id"] = app["id"]
-    task["group"], task["vertical"], task["subgroup"], task["name"], task["color"] = util.itemize_app_id(app["id"])
-    task["full-name"] = "-".join([task["vertical"], task["name"]])
+    task["group"], task["vertical"], task["subgroup"], name, task["color"] = util.itemize_app_id(app["id"])
+
+    task["name"] = "marathon::" + name
+    full_name = "-".join([task["vertical"], name])
+    task["full-name"] = "marathon::" + full_name
 
     task["marathon"] = dict()
     task["marathon"]["origin"] = cfg["host"]
@@ -100,7 +104,7 @@ def get_task_info(app, cfg):
     root_app = root_app == 'true' or root_app == 'True'
     status_path = get_in_dict(["env", cfg.get("status_path_lable")], app, "") or \
                   get_in_dict(["labels", cfg.get("status_path_lable")], app, "")
-    task["status_url"] = get_status_url(task["name"], task["group"], task["vertical"], task["subgroup"],
+    task["status_url"] = get_status_url(name, task["group"], task["vertical"], task["subgroup"],
                                         cfg['base_domain'], status_path,
                                         root_app, cfg)
 
@@ -143,7 +147,7 @@ def get_status_url(name, group, vertical, subgroup, base_domain, status_path, ro
 
 def overall_status(task):
     if task["marathon"]["healthy"] < task["marathon"]["instances"] or \
-                    task["status_page_status_code"] and task["status_page_status_code"] > 500:
+            task["status_page_status_code"] and task["status_page_status_code"] > 500:
         return util.status_level("ERROR")
     else:
         return 1 if "app_status" not in task or task["app_status"] is None else task["app_status"]

@@ -29,9 +29,9 @@ class TestAws(unittest.TestCase):
         service = {'id': '/dog-ci/vertical', 'access_key': 'AAAA', 'secret_key': '1234', 'region_name': 'some-region'}
 
         aws.update_aws('1234', service, 0, greedy=True)
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/dog-ci/vertical/mammal-dog').decode()))
-        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('/dog-ci/vertical/mammal-cat').decode()))
-        self.assertEqual({b'/dog-ci/vertical/mammal-dog', b'/dog-ci/vertical/mammal-cat'},
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('aws::/dog-ci/vertical/mammal-dog').decode()))
+        self.assertEqual({'info': 'data'}, json.loads(config.rdb.get('aws::/dog-ci/vertical/mammal-cat').decode()))
+        self.assertEqual({b'aws::/dog-ci/vertical/mammal-dog', b'aws::/dog-ci/vertical/mammal-cat'},
                          config.rdb.smembers('all-services'))
 
     def test_get_beanstalk_environments(self, *_):
@@ -48,6 +48,7 @@ class TestAws(unittest.TestCase):
             return_value=testdata_helper.describe_environment_health())
 
         expected = testdata_helper.get_task(status_url='https://name.group.vertical.somewhere.com/vertical-name/internal/status',
+                                            source="aws",
                                             version='UNKNOWN',
                                             app_status=1,
                                             status=3,
