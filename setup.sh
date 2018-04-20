@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
+set -e
 
-VENV=true
 DOCS_DEPS=false
 
-usage() { echo "Usage: $0 [--no-venv] [--doc-deps]" 1>&2;
+usage() { echo "Usage: $0 [--doc-deps]" 1>&2;
           echo "Options:"
-          echo "	--no-venv   Install packages globally. May need root privileges."
           echo "	--doc-deps  Includes dependencies to generate docs (ie. Sphinx)."
           exit 1; }
 
@@ -13,9 +12,6 @@ while getopts "h-:" opt; do
   case $opt in
     -)
       case $OPTARG in
-        no-venv)
-            VENV=false
-            ;;
         doc-deps)
             DOCS_DEPS=true
             ;;
@@ -35,28 +31,15 @@ while getopts "h-:" opt; do
   esac
 done
 
-createVirtualEnv() {
-  if [ -d "venv" ]; then
-    echo -e "\x1b[1m\x1b[33mFound venv. Deleting.\x1b[0m"
-    rm -rf venv
-  fi
-  echo -e "\x1b[1mPreparing VirtualEnv\x1b[0m"
-  python3 -m pip install --user virtualenv
-  python3 -m virtualenv venv
-}
 
-python3 get-pip.py --user
+echo -e "\x1b[1mPreparing VirtualEnv\x1b[0m"
+pip3 install --user virtualenv
 
-if ${VENV}; then
-  createVirtualEnv
-  ./venv/bin/pip install --upgrade pip
-else
-  echo -e "\x1b[1m\x1b[31m\nInstalling packages globally. This may need root privileges.\x1b[0m"
-fi
+python3 -m virtualenv -p python3 venv
 
-./venv/bin/pip install -r requirements.txt
+./venv/bin/pip3 install -r requirements.txt
 
-if ${DOCS_DEPS}; then
+if $DOCS_DEPS; then
     echo -e "\x1b[1mInstalling dependencies for docs\x1b[0m"
-    ./venv/bin/pip install -r docs/requirements.txt
+    ./venv/bin/pip3 install -r docs/requirements.txt
 fi
